@@ -11,28 +11,28 @@ class Step:
             self.id_label = ui.label(self.id).classes()
             self.label = ui.label(self.text).classes("grow")
             self.input = ui.label()
-            self.step_result = ui.toggle(["Pass", "Fail"])
+            self.compliance = ui.toggle(["Pass", "Fail"])
 
-        self.step_result_prev = self.step_result
-        self.step_result.on("click", lambda: self.reset_toggle_if_click_same(self.step_result.value))
-        self.step_result.on("update:model-value", self.update_toggle_color)
+        self.compliance_prev = self.compliance.value
+        self.compliance.on("click", lambda: self.reset_toggle_if_click_same(self.compliance.value))
+        self.compliance.on("update:model-value", self.update_compliance_color)
 
     def reset_toggle_if_click_same(self, new_value):
-        if new_value == self.step_result_prev:
-            self.step_result.value = None
+        if new_value == self.compliance_prev:
+            self.compliance.value = None
 
-        self.step_result_prev = self.step_result.value
+        self.compliance_prev = self.compliance.value
 
-    def update_toggle_color(self, event=None):
-        if self.step_result.value == "Pass":
-            self.step_result.classes(add="toggle-pass", remove="toggle-fail")
-            self.step_result.props("toggle-color=positive")
-        elif self.step_result.value == "Fail":
-            self.step_result.classes(add="toggle-fail", remove="toggle-pass")
-            self.step_result.props("toggle-color=negative")
+    def update_compliance_color(self, event=None):
+        if self.compliance.value == "Pass":
+            self.compliance.classes(add="toggle-pass", remove="toggle-fail")
+            self.compliance.props("toggle-color=positive")
+        elif self.compliance.value == "Fail":
+            self.compliance.classes(add="toggle-fail", remove="toggle-pass")
+            self.compliance.props("toggle-color=negative")
         else:
-            self.step_result.classes(remove="toggle-pass toggle-fail")
-            self.step_result.props("toggle-color=primary")
+            self.compliance.classes(remove="toggle-pass toggle-fail")
+            self.compliance.props("toggle-color=primary")
 
 
 class ObservationStep(Step):
@@ -51,12 +51,16 @@ class ObservationStep(Step):
                 ui.button(icon="edit_note", on_click=self.observe)
             
             self.input = ui.input()
-            self.step_result = ui.toggle(["Pass", "Fail"])
+            self.compliance = ui.toggle(["Pass", "Fail"])
 
-        self.step_result_prev = self.step_result
-        self.step_result.on("click", lambda: self.reset_toggle_if_click_same(self.step_result.value))
+        self.step_compliance_prev = self.compliance.value
+        self.compliance.on(
+            "click",
+            lambda: self.reset_toggle_if_click_same(self.compliance.value)
+        )
 
         self.input.on("keypress", self.validate)
+        self.compliance.on("update:model-value", self.update_compliance_color)
 
     def observe(self):
         measurement = self.observe_fn()
@@ -69,5 +73,5 @@ class ObservationStep(Step):
         if self.validate_fn is None:
             return
         
-        self.step_result.set_value("Pass" if self.validate_fn(self.input.value) else "Fail")
-        self.update_toggle_color()
+        self.compliance.set_value("Pass" if self.validate_fn(self.input.value) else "Fail")
+        self.update_compliance_color()

@@ -10,6 +10,8 @@ def main():
     s = Sheet()
     s.observe("", "Test operator")
     s.observe("", "Test date", get_date)
+    s.observe("", "EUT part number")
+    s.observe("", "EUT serial number")
     s.do("1.1", "Set POWER switch to ON")
     s.observe("1.2", "Measure voltage of R1", None, lambda x: float(x) > 5)
     s.observe("1.3", "Measure current of PSU")
