@@ -36,15 +36,20 @@ class Step:
 
 
 class ObservationStep(Step):
-    def __init__(self, id, text, observe_fn=None):
+    def __init__(self, id, text):
         self.id = id
         self.text = text
-        self.observe_fn = observe_fn
+        self.observe_fn = None
         self.spec = None
+
+    def capture(self, observe_fn):
+        self.observe_fn = observe_fn
+        return self
 
     def expect(self, spec):
         self.spec = spec
         self.validate_fn = spec.complies
+        return self
 
     def to_ui(self):
         with ui.row().classes("items-center w-full max-w-screen-md"):

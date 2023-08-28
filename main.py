@@ -10,7 +10,7 @@ def get_date():
 def main():
     s = Sheet()
     s.observe("", "Test operator")
-    s.observe("", "Test date", get_date).expect(DateSpec())
+    s.observe("", "Test date").capture(get_date).expect(DateSpec())
     s.observe("", "EUT part number")
     s.observe("", "EUT serial number")
     s.do("1.1", "Set POWER switch to ON")

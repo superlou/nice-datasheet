@@ -6,8 +6,8 @@ class Sheet:
     def __init__(self):
         self.steps = []
 
-    def observe(self, id, text, observe_fn=None):
-        step = ObservationStep(id, text, observe_fn)
+    def observe(self, id, text):
+        step = ObservationStep(id, text)
         self.steps.append(step)
         return step
     
