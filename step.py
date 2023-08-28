@@ -60,7 +60,7 @@ class ObservationStep(Step):
             self.input = ui.input()
             self.compliance = ui.toggle(["Pass", "Fail"])
 
-        self.step_compliance_prev = self.compliance.value
+        self.compliance_prev = self.compliance.value
         self.compliance.on(
             "click",
             lambda: self.reset_toggle_if_click_same(self.compliance.value)
