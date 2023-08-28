@@ -9,11 +9,14 @@ class Step:
         self.got_focus_fn = got_focus_fn
 
     def to_ui(self):
-        with ui.row().classes("items-center w-full max-w-screen-md"):
+        with ui.row().classes("items-center w-full max-w-screen-md q-px-md q-py-xs") as row:
+            self.row = row
             self.id_label = ui.label(self.id).classes()
             self.label = ui.label(self.text).classes("grow")
             self.input = ui.label()
             self.compliance = ui.toggle(["Pass", "Fail"])
+
+        self.compliance.on("click", self.got_focus_fn)
 
         self.compliance_prev = self.compliance.value
         self.compliance.on("click", lambda: self.reset_toggle_if_click_same(self.compliance.value))
@@ -25,8 +28,12 @@ class Step:
 
         self.compliance_prev = self.compliance.value
 
-    async def focus(self):
+    async def highlight(self):
         await ui.run_javascript(f"getElement({self.compliance.id}).$el.firstChild.focus()")
+        self.row.classes("shadow")
+
+    async def dehighlight(self):
+        self.row.classes(remove="shadow")
 
     def update_compliance_color(self, event=None):
         if self.compliance.value == "Pass":
@@ -60,7 +67,8 @@ class ObservationStep(Step):
         return self
 
     def to_ui(self):
-        with ui.row().classes("items-center w-full max-w-screen-md"):
+        with ui.row().classes("items-center w-full max-w-screen-md q-px-md q-py-xs") as row:
+            self.row = row
             self.id_label = ui.label(self.id).classes()
             self.label = ui.label(self.text).classes("grow")
             
@@ -79,6 +87,7 @@ class ObservationStep(Step):
             lambda: self.reset_toggle_if_click_same(self.compliance.value)
         )
 
+        self.compliance.on("click", self.got_focus_fn)
         self.input.on("focusin", self.got_focus_fn)
 
         self.input.on("keypress", self.validate)
@@ -89,8 +98,12 @@ class ObservationStep(Step):
         self.input.set_value(measurement)
         self.input.run_method("focus")
 
-    def focus(self):
+    async def highlight(self):
         self.input.run_method("focus")
+        self.row.classes('shadow')
+    
+    async def dehighlight(self):
+        self.row.classes(remove="shadow")
 
     async def validate(self, event):
         if event.args["keyCode"] != 13:

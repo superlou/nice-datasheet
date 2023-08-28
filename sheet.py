@@ -37,7 +37,12 @@ class Sheet:
     
     async def advance(self):
         self.current_step += 1
-        await self.steps[self.current_step].focus()
+        await self.steps[self.current_step].highlight()
 
-    def got_focus(self, index):
+    async def got_focus(self, index):
         self.current_step = index
+
+        for step in self.steps:
+            await step.dehighlight()
+
+        await self.steps[self.current_step].highlight()        
