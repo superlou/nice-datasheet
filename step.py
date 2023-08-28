@@ -36,17 +36,24 @@ class Step:
 
 
 class ObservationStep(Step):
-    def __init__(self, id, text, observe_fn=None, validate_fn=None):
+    def __init__(self, id, text, observe_fn=None):
         self.id = id
         self.text = text
         self.observe_fn = observe_fn
-        self.validate_fn = validate_fn
+        self.spec = None
+
+    def expect(self, spec):
+        self.spec = spec
+        self.validate_fn = spec.complies
 
     def to_ui(self):
         with ui.row().classes("items-center w-full max-w-screen-md"):
             self.id_label = ui.label(self.id).classes()
             self.label = ui.label(self.text).classes("grow")
             
+            if self.spec:
+                self.expect_label = ui.label(str(self.spec))
+
             if self.observe_fn:
                 ui.button(icon="edit_note", on_click=self.observe)
             
