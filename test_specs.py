@@ -20,3 +20,10 @@ def test_range_spec():
     assert s.complies("2.49") == True
     assert s.complies("2.50") == False
     assert s.complies("2.51") == False
+
+
+def test_range_spec_unexpected_input():
+    s = RangeSpec("[1, 2]")
+    assert s.complies("") == False
+    assert s.complies(None) == False
+    assert s.complies("abc") == False

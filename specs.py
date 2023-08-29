@@ -1,3 +1,4 @@
+import decimal
 from decimal import Decimal
 import re
 
@@ -25,7 +26,11 @@ class RangeSpec(Spec):
         self.right_bound = Decimal(right[:-1])
 
     def complies(self, text: str):
-        value = Decimal(text)
+        try:
+            value = Decimal(text)
+        except (decimal.InvalidOperation, TypeError):
+            return False
+
         left_bound = self.left_bound
         right_bound = self.right_bound
 
