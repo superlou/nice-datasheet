@@ -1,5 +1,5 @@
 from nicegui import ui
-from step import Step, ObservationStep
+from step import SimpleStep, ObservationStep
 
 
 class Sheet:
@@ -19,7 +19,7 @@ class Sheet:
     
     def do(self, id, text):
         index = len(self.steps)
-        step = Step(
+        step = SimpleStep(
             id, text,
             self.advance, 
             lambda: self.got_focus(index)

@@ -7,20 +7,10 @@ class Step:
         self.text = text
         self.advance_fn = advance_fn
         self.got_focus_fn = got_focus_fn
+        self.row_classes = "items-center w-full max-w-screen-md q-px-md q-py-xs"
 
     def to_ui(self):
-        with ui.row().classes("items-center w-full max-w-screen-md q-px-md q-py-xs") as row:
-            self.row = row
-            self.id_label = ui.label(self.id).classes()
-            self.label = ui.label(self.text).classes("grow")
-            self.input = ui.label()
-            self.compliance = ui.toggle(["Pass", "Fail"])
-
-        self.compliance.on("click", self.got_focus_fn)
-
-        self.compliance_prev = self.compliance.value
-        self.compliance.on("click", lambda: self.reset_toggle_if_click_same(self.compliance.value))
-        self.compliance.on("update:model-value", self.update_compliance_color)
+        raise NotImplementedError
 
     def reset_toggle_if_click_same(self, new_value):
         if new_value == self.compliance_prev:
@@ -29,7 +19,6 @@ class Step:
         self.compliance_prev = self.compliance.value
 
     async def highlight(self):
-        await ui.run_javascript(f"getElement({self.compliance.id}).$el.firstChild.focus()")
         self.row.classes("shadow")
 
     async def dehighlight(self):
@@ -47,8 +36,32 @@ class Step:
             self.compliance.props("toggle-color=primary")
 
 
+class SimpleStep(Step):
+    def __init__(self, id, text, advance_fn=None, got_focus_fn=None):
+        super().__init__(id, text, advance_fn, got_focus_fn)
+
+    def to_ui(self):
+        with ui.row().classes(self.row_classes) as row:
+            self.row = row
+            self.id_label = ui.label(self.id).classes()
+            self.label = ui.label(self.text).classes("grow")
+            self.input = ui.label()
+            self.compliance = ui.toggle(["Pass", "Fail"])
+
+        self.compliance.on("click", self.got_focus_fn)
+
+        self.compliance_prev = self.compliance.value
+        self.compliance.on("click", lambda: self.reset_toggle_if_click_same(self.compliance.value))
+        self.compliance.on("update:model-value", self.update_compliance_color)
+
+    async def highlight(self):
+        await super().highlight()
+        await ui.run_javascript(f"getElement({self.compliance.id}).$el.firstChild.focus()")
+
+
 class ObservationStep(Step):
     def __init__(self, id, text, advance_fn=None, got_focus_fn=None):
+        super().__init__(id, text, advance_fn, got_focus_fn)
         self.id = id
         self.text = text
         self.observe_fn = None
@@ -67,7 +80,7 @@ class ObservationStep(Step):
         return self
 
     def to_ui(self):
-        with ui.row().classes("items-center w-full max-w-screen-md q-px-md q-py-xs") as row:
+        with ui.row().classes(self.row_classes) as row:
             self.row = row
             self.id_label = ui.label(self.id).classes()
             self.label = ui.label(self.text).classes("grow")
@@ -99,12 +112,9 @@ class ObservationStep(Step):
         self.input.run_method("focus")
 
     async def highlight(self):
+        await super().highlight()
         self.input.run_method("focus")
-        self.row.classes('shadow')
     
-    async def dehighlight(self):
-        self.row.classes(remove="shadow")
-
     async def validate(self, event):
         if event.args["keyCode"] != 13:
             return
