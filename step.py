@@ -82,20 +82,27 @@ class ObservationStep(Step):
         return self
 
     def build_ui(self):
-        self.id_label = ui.label(self.id).classes()
-        self.label = ui.label(self.text).classes("grow")
+        self.id_label = ui.label(self.id)
+        self.text = ui.label(self.text).classes("grow")
         
-        if self.spec:
-            self.expect_label = ui.label(str(self.spec))
+        self.expect_label = ui.label(str(self.spec))
 
-        if self.observe_fn:
-            ui.button(icon="edit_note", on_click=self.observe)
-        
-        self.input = ui.input()
+        with ui.row():
+            if self.observe_fn:
+                ui.button(icon="edit_note", on_click=self.observe)
+            
+            self.input = ui.input()
+
         self.input.on("focusin", self.emit["got_focus"])
-        self.input.on("keypress", self.validate)
+        self.input.on("keypress", self.on_input_keypress)
 
     def observe(self):
+        if self.observe_fn is None:
+            ui.notify(
+                "This step does not have an automatic observation function",
+                type="warning"
+            )
+
         measurement = self.observe_fn()
         self.input.set_value(measurement)
         self.input.run_method("focus")
@@ -104,14 +111,15 @@ class ObservationStep(Step):
         await super().highlight()
         self.input.run_method("focus")
     
-    async def validate(self, event):
-        if event.args["keyCode"] != 13:
-            return
+    async def on_input_keypress(self, event):
+        if event.args["keyCode"] == 13 and event.args["ctrlKey"]:
+            self.observe()
 
-        if self.validate_fn is None:
+        if event.args["keyCode"] == 13 and not event.args["ctrlKey"]:
+            if self.validate_fn is None:
+                await self.emit["advance"]()
+                return
+            
+            self.compliance.set_value("Pass" if self.validate_fn(self.input.value) else "Fail")
+            self.update_compliance_color()
             await self.emit["advance"]()
-            return
-        
-        self.compliance.set_value("Pass" if self.validate_fn(self.input.value) else "Fail")
-        self.update_compliance_color()
-        await self.emit["advance"]()
