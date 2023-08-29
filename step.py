@@ -2,11 +2,10 @@ from nicegui import ui
 
 
 class Step:
-    def __init__(self, id, text, advance_fn=None, got_focus_fn=None):
+    def __init__(self, id, text, emit):
         self.id = id
         self.text = text
-        self.advance_fn = advance_fn
-        self.got_focus_fn = got_focus_fn
+        self.emit = emit
         self.row_classes = "items-center w-full max-w-screen-md q-px-md q-py-xs"
 
     def to_ui(self):
@@ -37,8 +36,8 @@ class Step:
 
 
 class SimpleStep(Step):
-    def __init__(self, id, text, advance_fn=None, got_focus_fn=None):
-        super().__init__(id, text, advance_fn, got_focus_fn)
+    def __init__(self, id, text, emit):
+        super().__init__(id, text, emit)
 
     def to_ui(self):
         with ui.row().classes(self.row_classes) as row:
@@ -48,7 +47,7 @@ class SimpleStep(Step):
             self.input = ui.label()
             self.compliance = ui.toggle(["Pass", "Fail"])
 
-        self.compliance.on("click", self.got_focus_fn)
+        self.compliance.on("click", self.emit["got_focus"])
 
         self.compliance_prev = self.compliance.value
         self.compliance.on("click", lambda: self.reset_toggle_if_click_same(self.compliance.value))
@@ -60,15 +59,14 @@ class SimpleStep(Step):
 
 
 class ObservationStep(Step):
-    def __init__(self, id, text, advance_fn=None, got_focus_fn=None):
-        super().__init__(id, text, advance_fn, got_focus_fn)
+    def __init__(self, id, text, emit):
+        super().__init__(id, text, emit)
         self.id = id
         self.text = text
         self.observe_fn = None
         self.spec = None
         self.validate_fn = None
-        self.advance_fn = advance_fn
-        self.got_focus_fn = got_focus_fn
+        self.emit = emit
 
     def capture(self, observe_fn):
         self.observe_fn = observe_fn
@@ -100,8 +98,8 @@ class ObservationStep(Step):
             lambda: self.reset_toggle_if_click_same(self.compliance.value)
         )
 
-        self.compliance.on("click", self.got_focus_fn)
-        self.input.on("focusin", self.got_focus_fn)
+        self.compliance.on("click", self.emit["got_focus"])
+        self.input.on("focusin", self.emit["got_focus"])
 
         self.input.on("keypress", self.validate)
         self.compliance.on("update:model-value", self.update_compliance_color)
@@ -120,9 +118,9 @@ class ObservationStep(Step):
             return
 
         if self.validate_fn is None:
-            await self.advance_fn()
+            await self.emit["advance"]()
             return
         
         self.compliance.set_value("Pass" if self.validate_fn(self.input.value) else "Fail")
         self.update_compliance_color()
-        await self.advance_fn()
+        await self.emit["advance"]()

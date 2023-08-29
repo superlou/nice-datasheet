@@ -9,21 +9,19 @@ class Sheet:
 
     def observe(self, id, text):
         index = len(self.steps)
-        step = ObservationStep(
-            id, text,
-            self.advance,
-            lambda: self.got_focus(index)
-        )
+        step = ObservationStep(id, text, {
+            "advance": self.advance,
+            "got_focus": lambda: self.got_focus(index)
+        })
         self.steps.append(step)
         return step
     
     def do(self, id, text):
         index = len(self.steps)
-        step = SimpleStep(
-            id, text,
-            self.advance, 
-            lambda: self.got_focus(index)
-        )
+        step = SimpleStep(id, text, {
+            "advance": self.advance,
+            "got_focus": lambda: self.got_focus(index)
+        })
         self.steps.append(step)
         return step
     
