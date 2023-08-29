@@ -9,6 +9,19 @@ class Step:
         self.row_classes = "items-center w-full max-w-screen-md q-px-md q-py-xs"
 
     def to_ui(self):
+        with ui.row().classes(self.row_classes) as row:
+            self.row = row
+            self.build_ui()
+            self.compliance = ui.toggle(["Pass", "Fail"])
+
+        self.compliance.on("click", self.emit["got_focus"])
+
+        self.compliance_prev = self.compliance.value
+        self.compliance.on("click", lambda: self.reset_toggle_if_click_same(self.compliance.value))
+        self.compliance.on("update:model-value", self.update_compliance_color)
+        self.compliance.style("print-color-adjust: exact;")
+
+    def build_ui(self):
         raise NotImplementedError
 
     def reset_toggle_if_click_same(self, new_value):
@@ -39,20 +52,10 @@ class SimpleStep(Step):
     def __init__(self, id, text, emit):
         super().__init__(id, text, emit)
 
-    def to_ui(self):
-        with ui.row().classes(self.row_classes) as row:
-            self.row = row
-            self.id_label = ui.label(self.id).classes()
-            self.label = ui.label(self.text).classes("grow")
-            self.input = ui.label()
-            self.compliance = ui.toggle(["Pass", "Fail"])
-
-        self.compliance.on("click", self.emit["got_focus"])
-
-        self.compliance_prev = self.compliance.value
-        self.compliance.on("click", lambda: self.reset_toggle_if_click_same(self.compliance.value))
-        self.compliance.on("update:model-value", self.update_compliance_color)
-        self.compliance.style("print-color-adjust: exact;")
+    def build_ui(self):
+        self.id_label = ui.label(self.id).classes()
+        self.label = ui.label(self.text).classes("grow")
+        self.input = ui.label()
 
     async def highlight(self):
         await super().highlight()
@@ -78,33 +81,19 @@ class ObservationStep(Step):
         self.validate_fn = spec.complies
         return self
 
-    def to_ui(self):
-        with ui.row().classes(self.row_classes) as row:
-            self.row = row
-            self.id_label = ui.label(self.id).classes()
-            self.label = ui.label(self.text).classes("grow")
-            
-            if self.spec:
-                self.expect_label = ui.label(str(self.spec))
+    def build_ui(self):
+        self.id_label = ui.label(self.id).classes()
+        self.label = ui.label(self.text).classes("grow")
+        
+        if self.spec:
+            self.expect_label = ui.label(str(self.spec))
 
-            if self.observe_fn:
-                ui.button(icon="edit_note", on_click=self.observe)
-            
-            self.input = ui.input()
-            self.compliance = ui.toggle(["Pass", "Fail"])
-
-        self.compliance_prev = self.compliance.value
-        self.compliance.on(
-            "click",
-            lambda: self.reset_toggle_if_click_same(self.compliance.value)
-        )
-
-        self.compliance.on("click", self.emit["got_focus"])
+        if self.observe_fn:
+            ui.button(icon="edit_note", on_click=self.observe)
+        
+        self.input = ui.input()
         self.input.on("focusin", self.emit["got_focus"])
-
         self.input.on("keypress", self.validate)
-        self.compliance.on("update:model-value", self.update_compliance_color)
-        self.compliance.style("print-color-adjust: exact;")
 
     def observe(self):
         measurement = self.observe_fn()
