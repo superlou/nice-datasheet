@@ -52,6 +52,7 @@ class SimpleStep(Step):
         self.compliance_prev = self.compliance.value
         self.compliance.on("click", lambda: self.reset_toggle_if_click_same(self.compliance.value))
         self.compliance.on("update:model-value", self.update_compliance_color)
+        self.compliance.style("print-color-adjust: exact;")
 
     async def highlight(self):
         await super().highlight()
@@ -103,6 +104,7 @@ class ObservationStep(Step):
 
         self.input.on("keypress", self.validate)
         self.compliance.on("update:model-value", self.update_compliance_color)
+        self.compliance.style("print-color-adjust: exact;")
 
     def observe(self):
         measurement = self.observe_fn()
