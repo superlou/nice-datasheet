@@ -77,6 +77,7 @@ class ObservationStep(Step):
         self.spec = kwargs.get("spec", None)
         if self.spec is not None:
             self.validate_fn = self.spec.complies
+        self.min_decimal_places = kwargs.get("min_decimal_places", None)
 
     def build_ui(self):
         self.id_label = ui.label(self.id).classes("col-1")
@@ -84,16 +85,19 @@ class ObservationStep(Step):
         
         self.expect_label = ui.label(str(self.spec)).classes("col-2")
         
-        with ui.input().classes("col-2") as input_field:
+        with ui.input(on_change=self.on_input_change) as input_field:
             self.input = input_field
-            self.input.props("outlined")
+            self.input.props("outlined").classes("col-2")
 
-            with input_field.add_slot('prepend'):
+            if self.min_decimal_places is not None:
+                self.input.on("keydown", self.check_decimal_places)
+
+            with self.input.add_slot("prepend"):
                 if self.observe_fn:
                     ui.button(icon="auto_fix_high", on_click=self.observe) \
                         .props("flat dense")
 
-            with input_field.add_slot('append'):
+            with self.input.add_slot('append'):
                 ui.label(self.unit) 
 
         self.input.on("focusin", self.emit["got_focus"])
@@ -109,6 +113,22 @@ class ObservationStep(Step):
         measurement = self.observe_fn()
         self.input.set_value(measurement)
         self.input.run_method("focus")
+
+    def on_input_change(self):
+        if self.min_decimal_places is not None:
+            self.check_decimal_places()
+
+    def check_decimal_places(self):
+        parts = self.input.value.split(".")
+
+        if len(parts) < 2:
+            self.input.props("color=negative")
+            return
+
+        if len(parts[1]) < self.min_decimal_places:
+            self.input.props("color=negative")
+        else:
+            self.input.props(remove="color=negative")
 
     async def highlight(self):
         await super().highlight()

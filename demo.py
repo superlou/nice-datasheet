@@ -23,9 +23,14 @@ s.do("1.1", "Set POWER switch to ON")
 s.observe("1.2", "Measure voltage of R1", unit="Ω", spec=RangeSpec("[5.50, 8.30]"))
 s.observe("1.3", "Measure current of PSU", unit="V", spec=RangeSpec("[1, 2]"))
 
-t1 = s.observe("1.4.1", "Measure the torque at the left-handed bolt harness.", unit="lb-in")
-t2 = s.observe("1.4.2", "Repeat step 1.4.1.", unit="lb-in")
-t3 = s.observe("1.4.2", "Repeat step 1.4.1.", unit="lb-in")
+args = {
+    "unit": "lb-in",
+    "min_decimal_places": 2,
+    "spec":RangeSpec("[0.50, 2.50]")
+}
+t1 = s.observe("1.4.1", "Measure the torque at the left-handed bolt harness.", **args)
+t2 = s.observe("1.4.2", "Repeat step 1.4.1.", **args)
+t3 = s.observe("1.4.2", "Repeat step 1.4.1.", **args)
 s.observe(f"1.4.3", "Calculate the mean of the three torque measurements.", unit="lb-in",
           capture=lambda: get_steps_mean([t1, t2, t3]), spec=RangeSpec("[1.2, 1.8]"))
 
