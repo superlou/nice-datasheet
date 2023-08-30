@@ -3,9 +3,10 @@ from step import SimpleStep, ObservationStep
 
 
 class Sheet:
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.steps = []
         self.current_step = 0
+        self.title = kwargs.get("title", None)
 
     def observe(self, id, text, **kwargs):
         index = len(self.steps)
@@ -26,6 +27,17 @@ class Sheet:
         return step
     
     def run(self):
+        if self.title:
+            ui.label(self.title).classes("text-h1")
+
+        with ui.row().classes("max-w-screen-lg items-center fit row wrap q-px-md q-py-xs"):
+            ui.label("Ref").classes("col-1 text-h6")
+            ui.label("Description").classes("col-grow text-h6")
+            ui.label("Specification").classes("col-2 text-h6")
+            ui.label("Data").classes("col-2 text-h6")
+            ui.label("Result").classes("col-2 text-h6")
+
+
         self.current_step = 0
 
         for step in self.steps:

@@ -7,7 +7,7 @@ def get_date():
     return date.today().strftime("%m/%d/%Y")
 
 
-s = Sheet()
+s = Sheet(title="ATP 1234-1 Datasheet")
 s.observe("", "Test operator")
 s.observe("", "Test date", capture=get_date, spec=DateSpec())
 s.observe("", "EUT part number")

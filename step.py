@@ -12,7 +12,8 @@ class Step:
         with ui.row().classes(self.row_classes) as row:
             self.row = row
             self.build_ui()
-            self.compliance = ui.toggle(["Pass", "Fail"])
+            with ui.row().classes("col-2"):
+                self.compliance = ui.toggle(["Pass", "Fail"])
 
         self.compliance.on("click", self.emit["got_focus"])
 
@@ -81,7 +82,7 @@ class ObservationStep(Step):
         self.id_label = ui.label(self.id).classes("col-1")
         self.text = ui.label(self.text).classes("col-grow")
         
-        self.expect_label = ui.label(str(self.spec))
+        self.expect_label = ui.label(str(self.spec)).classes("col-2")
         
         with ui.input().classes("col-2") as input_field:
             self.input = input_field
