@@ -6,7 +6,7 @@ class Step:
         self.id = id
         self.text = text
         self.emit = emit
-        self.row_classes = "items-center w-full max-w-screen-md q-px-md q-py-xs"
+        self.row_classes = "max-w-screen-lg items-center fit row wrap q-px-md q-py-xs"
 
     def to_ui(self):
         with ui.row().classes(self.row_classes) as row:
@@ -53,8 +53,8 @@ class SimpleStep(Step):
         super().__init__(id, text, emit)
 
     def build_ui(self):
-        self.id_label = ui.label(self.id).classes()
-        self.label = ui.label(self.text).classes("grow")
+        self.id_label = ui.label(self.id).classes("col-1")
+        self.label = ui.label(self.text).classes("col-grow")
         self.input = ui.label()
 
     async def highlight(self):
@@ -82,16 +82,21 @@ class ObservationStep(Step):
         return self
 
     def build_ui(self):
-        self.id_label = ui.label(self.id)
-        self.text = ui.label(self.text).classes("grow")
+        self.id_label = ui.label(self.id).classes("col-1")
+        self.text = ui.label(self.text).classes("col-grow")
         
         self.expect_label = ui.label(str(self.spec))
+        
+        with ui.input().classes("col-2") as input_field:
+            self.input = input_field
+            self.input.props("outlined")
 
-        with ui.row():
-            if self.observe_fn:
-                ui.button(icon="edit_note", on_click=self.observe)
-            
-            self.input = ui.input()
+            prepend = input_field.add_slot('prepend')
+
+            with prepend:
+                if self.observe_fn:
+                    ui.button(icon="edit_note", on_click=self.observe) \
+                        .props("flat dense")       
 
         self.input.on("focusin", self.emit["got_focus"])
         self.input.on("keypress", self.on_input_keypress)
