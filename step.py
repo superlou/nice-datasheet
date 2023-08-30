@@ -63,24 +63,19 @@ class SimpleStep(Step):
 
 
 class ObservationStep(Step):
-    def __init__(self, id, text, unit, emit):
+    def __init__(self, id, text, emit, **kwargs):
         super().__init__(id, text, emit)
         self.id = id
         self.text = text
-        self.observe_fn = None
         self.spec = None
         self.validate_fn = None
-        self.unit = unit
         self.emit = emit
 
-    def capture(self, observe_fn):
-        self.observe_fn = observe_fn
-        return self
-
-    def expect(self, spec):
-        self.spec = spec
-        self.validate_fn = spec.complies
-        return self
+        self.unit = kwargs.get("unit", None)
+        self.observe_fn = kwargs.get("capture", None)
+        self.spec = kwargs.get("spec", None)
+        if self.spec is not None:
+            self.validate_fn = self.spec.complies
 
     def build_ui(self):
         self.id_label = ui.label(self.id).classes("col-1")
@@ -91,8 +86,6 @@ class ObservationStep(Step):
         with ui.input().classes("col-2") as input_field:
             self.input = input_field
             self.input.props("outlined")
-
-            # ui.label(self.unit)
 
             with input_field.add_slot('prepend'):
                 if self.observe_fn:

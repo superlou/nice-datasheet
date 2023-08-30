@@ -7,12 +7,12 @@ class Sheet:
         self.steps = []
         self.current_step = 0
 
-    def observe(self, id, text, unit=None):
+    def observe(self, id, text, **kwargs):
         index = len(self.steps)
-        step = ObservationStep(id, text, unit, {
+        step = ObservationStep(id, text, {
             "advance": self.advance,
             "got_focus": lambda: self.got_focus(index)
-        })
+        }, **kwargs)
         self.steps.append(step)
         return step
     
