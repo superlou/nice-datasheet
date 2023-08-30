@@ -90,7 +90,7 @@ class ObservationStep(Step):
 
             with input_field.add_slot('prepend'):
                 if self.observe_fn:
-                    ui.button(icon="edit_note", on_click=self.observe) \
+                    ui.button(icon="auto_fix_high", on_click=self.observe) \
                         .props("flat dense")
 
             with input_field.add_slot('append'):
