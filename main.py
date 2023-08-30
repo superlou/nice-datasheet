@@ -14,8 +14,8 @@ def main():
     s.observe("", "EUT part number")
     s.observe("", "EUT serial number")
     s.do("1.1", "Set POWER switch to ON")
-    s.observe("1.2", "Measure voltage of R1").expect(RangeSpec("[5.50, 8.30]"))
-    s.observe("1.3", "Measure current of PSU").expect(RangeSpec("[1, 2]"))
+    s.observe("1.2", "Measure voltage of R1", unit="Ω").expect(RangeSpec("[5.50, 8.30]"))
+    s.observe("1.3", "Measure current of PSU", unit="V").expect(RangeSpec("[1, 2]"))
 
     s.run()
 

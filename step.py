@@ -63,13 +63,14 @@ class SimpleStep(Step):
 
 
 class ObservationStep(Step):
-    def __init__(self, id, text, emit):
+    def __init__(self, id, text, unit, emit):
         super().__init__(id, text, emit)
         self.id = id
         self.text = text
         self.observe_fn = None
         self.spec = None
         self.validate_fn = None
+        self.unit = unit
         self.emit = emit
 
     def capture(self, observe_fn):
@@ -91,12 +92,15 @@ class ObservationStep(Step):
             self.input = input_field
             self.input.props("outlined")
 
-            prepend = input_field.add_slot('prepend')
+            # ui.label(self.unit)
 
-            with prepend:
+            with input_field.add_slot('prepend'):
                 if self.observe_fn:
                     ui.button(icon="edit_note", on_click=self.observe) \
-                        .props("flat dense")       
+                        .props("flat dense")
+
+            with input_field.add_slot('append'):
+                ui.label(self.unit) 
 
         self.input.on("focusin", self.emit["got_focus"])
         self.input.on("keypress", self.on_input_keypress)

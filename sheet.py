@@ -7,9 +7,9 @@ class Sheet:
         self.steps = []
         self.current_step = 0
 
-    def observe(self, id, text):
+    def observe(self, id, text, unit=None):
         index = len(self.steps)
-        step = ObservationStep(id, text, {
+        step = ObservationStep(id, text, unit, {
             "advance": self.advance,
             "got_focus": lambda: self.got_focus(index)
         })
