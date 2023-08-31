@@ -14,9 +14,11 @@ class Step:
             self.build_ui()
             with ui.row().classes("col-2"):
                 self.compliance = ui.toggle(["Pass", "Fail"])
+                # self.compliance = ui.radio(["Pass", "Fail"]).props("inline dense")
 
-        self.compliance.style("background:white")
+        self.compliance.style("background:#f8f8f8")
         self.compliance.on("click", self.emit["got_focus"])
+        self.compliance.props("unelevated")
 
         self.compliance_prev = self.compliance.value
         self.compliance.on("click", lambda: self.reset_toggle_if_click_same(self.compliance.value))
