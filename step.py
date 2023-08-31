@@ -98,10 +98,10 @@ class ObservationStep(Step):
             with self.input.add_slot("prepend"):
                 if self.observe_fn:
                     ui.button(icon="auto_fix_high", on_click=self.observe) \
-                        .props("flat dense")
+                        .props("flat dense").classes("print-hide")
 
             with self.input.add_slot('append'):
-                ui.label(self.unit) 
+                ui.label(self.unit).style("font-size:12pt")
 
         self.input.on("focusin", self.emit["got_focus"])
         self.input.on("keypress", self.on_input_keypress)
