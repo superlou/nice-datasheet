@@ -6,7 +6,7 @@ class Step:
         self.id = id
         self.text = text
         self.emit = emit
-        self.row_classes = "max-w-screen-lg items-center fit row wrap q-px-md q-py-xs"
+        self.row_classes = "max-w-screen-lg items-center fit row no-wrap"
 
     def to_ui(self):
         with ui.row().classes(self.row_classes) as row:
@@ -15,6 +15,7 @@ class Step:
             with ui.row().classes("col-2"):
                 self.compliance = ui.toggle(["Pass", "Fail"])
 
+        self.compliance.style("background:white")
         self.compliance.on("click", self.emit["got_focus"])
 
         self.compliance_prev = self.compliance.value
@@ -32,10 +33,12 @@ class Step:
         self.compliance_prev = self.compliance.value
 
     async def highlight(self):
-        self.row.classes("shadow")
+        # self.row.classes("shadow")
+        self.row.style("background:#f2f7ff")
 
     async def dehighlight(self):
-        self.row.classes(remove="shadow")
+        # self.row.classes(remove="shadow")
+        self.row.style("background:auto")
 
     def update_compliance_color(self, event=None):
         if self.compliance.value == "Pass":
@@ -55,7 +58,7 @@ class SimpleStep(Step):
 
     def build_ui(self):
         self.id_label = ui.label(self.id).classes("col-1")
-        self.label = ui.label(self.text).classes("col-grow")
+        self.label = ui.label(self.text).classes("col")
         self.input = ui.label()
 
     async def highlight(self):
@@ -81,13 +84,13 @@ class ObservationStep(Step):
 
     def build_ui(self):
         self.id_label = ui.label(self.id).classes("col-1")
-        self.text = ui.label(self.text).classes("col-grow")
+        self.text = ui.label(self.text).classes("col")
         
         self.expect_label = ui.label(str(self.spec)).classes("col-2")
         
         with ui.input(on_change=self.on_input_change) as input_field:
             self.input = input_field
-            self.input.props("outlined").classes("col-2")
+            self.input.props("outlined bg-color=white").classes("col-2")
 
             if self.min_decimal_places is not None:
                 self.input.on("keydown", self.check_decimal_places)
