@@ -43,6 +43,9 @@ class Sheet:
         for step in self.steps:
             step.to_ui()
     
+        ui.button("Print", on_click=self.trigger_print_dialog)
+
+
         ui.run()
     
     async def advance(self):
@@ -56,3 +59,6 @@ class Sheet:
             await step.dehighlight()
 
         await self.steps[self.current_step].highlight()        
+
+    async def trigger_print_dialog(self):
+        await ui.run_javascript("window.print();", respond=False)

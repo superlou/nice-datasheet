@@ -65,7 +65,10 @@ class SimpleStep(Step):
 
     async def highlight(self):
         await super().highlight()
-        await ui.run_javascript(f"getElement({self.compliance.id}).$el.firstChild.focus()")
+        await ui.run_javascript(
+            f"getElement({self.compliance.id}).$el.firstChild.focus()",
+            respond=False
+        )
 
 
 class ObservationStep(Step):
