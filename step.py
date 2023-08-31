@@ -12,9 +12,9 @@ class Step:
         with ui.row().classes(self.row_classes) as row:
             self.row = row
             self.build_ui()
-            with ui.row().classes("col-2"):
+            with ui.row().classes("col-1"):
                 self.compliance = ui.toggle(["Pass", "Fail"])
-                # self.compliance = ui.radio(["Pass", "Fail"]).props("inline dense")
+                self.compliance.props("dense").style("height:56px")
 
         self.compliance.style("background:#f8f8f8")
         self.compliance.on("click", self.emit["got_focus"])
@@ -61,7 +61,7 @@ class SimpleStep(Step):
     def build_ui(self):
         self.id_label = ui.label(self.id).classes("col-1")
         self.label = ui.label(self.text).classes("col")
-        self.input = ui.label()
+        self.input = ui.label().classes("col-3")
 
     async def highlight(self):
         await super().highlight()
@@ -92,7 +92,7 @@ class ObservationStep(Step):
         
         with ui.input(on_change=self.on_input_change) as input_field:
             self.input = input_field
-            self.input.props("outlined bg-color=white").classes("col-2")
+            self.input.props("outlined bg-color=white").classes("col-3")
 
             if self.min_decimal_places is not None:
                 self.input.on("keydown", self.check_decimal_places)
