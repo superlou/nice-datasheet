@@ -1,5 +1,4 @@
 import json
-import os
 from pathlib import Path
 from datetime import datetime
 from nicegui import ui
@@ -12,9 +11,9 @@ class Sheet:
         self.current_step = 0
         self.title = kwargs.get("title", None)
 
-    def observe(self, id, text, **kwargs):
+    def observe(self, ref, text, **kwargs):
         index = len(self.steps)
-        step = ObservationStep(id, text, {
+        step = ObservationStep(ref, text, {
             "advance": self.advance,
             "got_focus": lambda: self.got_focus(index),
             "changed": self.on_changed,
@@ -22,9 +21,9 @@ class Sheet:
         self.steps.append(step)
         return step
     
-    def do(self, id, text):
+    def do(self, ref, text):
         index = len(self.steps)
-        step = SimpleStep(id, text, {
+        step = SimpleStep(ref, text, {
             "advance": self.advance,
             "got_focus": lambda: self.got_focus(index),
             "changed": self.on_changed,
@@ -96,13 +95,13 @@ class SheetJSONEncoder(json.JSONEncoder):
             }
         elif isinstance(o, SimpleStep):
             return {
-                "ref": o.id,
+                "ref": o.ref,
                 "text": o.text,
                 "compliance": o.compliance.value,
             }
         elif isinstance(o, ObservationStep):
             return {
-                "ref": o.id,
+                "ref": o.ref,
                 "text": o.text,
                 "input": o.input.value,
                 "compliance": o.compliance.value,

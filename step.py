@@ -2,8 +2,8 @@ from nicegui import ui
 
 
 class Step:
-    def __init__(self, id, text, emit):
-        self.id = id
+    def __init__(self, ref, text, emit):
+        self.ref = ref
         self.text = text
         self.emit = emit
         self.row_classes = "max-w-screen-lg items-center fit row no-wrap"
@@ -69,11 +69,11 @@ class Step:
 
 
 class SimpleStep(Step):
-    def __init__(self, id, text, emit):
-        super().__init__(id, text, emit)
+    def __init__(self, ref, text, emit):
+        super().__init__(ref, text, emit)
 
     def build_ui(self):
-        self.id_label = ui.label(self.id).classes("col-1")
+        self.ref_label = ui.label(self.ref).classes("col-1")
         self.label = ui.label(self.text).classes("col")
         self.input = ui.label().classes("col-3")
 
@@ -86,23 +86,19 @@ class SimpleStep(Step):
 
 
 class ObservationStep(Step):
-    def __init__(self, id, text, emit, **kwargs):
-        super().__init__(id, text, emit)
-        self.id = id
-        self.text = text
-        self.spec = None
-        self.validate_fn = None
-        self.emit = emit
-
+    def __init__(self, ref, text, emit, **kwargs):
+        super().__init__(ref, text, emit)
         self.unit = kwargs.get("unit", None)
         self.observe_fn = kwargs.get("capture", None)
         self.spec = kwargs.get("spec", None)
         if self.spec is not None:
             self.validate_fn = self.spec.complies
+        else:
+            self.validate_fn = None
         self.min_decimal_places = kwargs.get("min_decimal_places", None)
 
     def build_ui(self):
-        self.id_label = ui.label(self.id).classes("col-1")
+        self.ref_label = ui.label(self.ref).classes("col-1")
         self.text = ui.label(self.text).classes("col")
         
         self.expect_label = ui.label(str(self.spec)).classes("col-2")
