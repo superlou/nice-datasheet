@@ -39,7 +39,7 @@ class Sheet:
             ui.label("Ref").classes("col-1 text-h6")
             ui.label("Description").classes("col text-h6")
             ui.label("Specification").classes("col-2 text-h6")
-            ui.label("Data").classes("col-3 text-h6")
+            ui.label("Observation").classes("col-3 text-h6")
             ui.label("Result").classes("col-1 text-h6")
 
         self.current_step = 0
