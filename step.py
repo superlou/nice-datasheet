@@ -23,6 +23,8 @@ class Step:
         self.compliance_prev = self.compliance.value
         self.compliance.on("click", lambda: self.reset_toggle_if_click_same(self.compliance.value))
         self.compliance.on("update:model-value", self.update_compliance_color)
+        # Can't use update:model-value for changed because clearing does not update model
+        self.compliance.on("click", self.emit["changed"])
         self.compliance.style("print-color-adjust: exact;")
 
     def build_ui(self):
@@ -123,6 +125,8 @@ class ObservationStep(Step):
         self.input.run_method("focus")
 
     def on_input_change(self):
+        self.emit["changed"]()
+
         if self.min_decimal_places is not None:
             self.check_decimal_places()
 
