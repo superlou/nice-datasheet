@@ -35,7 +35,7 @@ class Sheet:
         if self.title:
             ui.label(self.title).classes("text-h1")
 
-        with ui.row().classes("max-w-screen-lg items-center fit row wrap q-px-md q-py-xs"):
+        with ui.row().classes("max-w-screen-lg items-center fit row no-wrap"):
             ui.label("Ref").classes("col-1 text-h6")
             ui.label("Description").classes("col text-h6")
             ui.label("Specification").classes("col-2 text-h6")
