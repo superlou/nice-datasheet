@@ -48,8 +48,8 @@ class Sheet:
             step.to_ui()
     
         with ui.row():
-            ui.button("Print", on_click=self.trigger_print_dialog)
-            ui.button("Save Data", on_click=self.download_json)
+            ui.button("Print", icon="print", on_click=self.trigger_print_dialog)
+            ui.button("Save Data", icon="save", on_click=self.download_json)
 
         ui.run()
     
