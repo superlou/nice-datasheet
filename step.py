@@ -141,14 +141,21 @@ class ObservationStep(Step):
     def check_decimal_places(self):
         parts = self.input.value.split(".")
 
-        if len(parts) < 2:
-            self.input.props("color=negative")
-            return
-
-        if len(parts[1]) < self.min_decimal_places:
-            self.input.props("color=negative")
+        if self.input.value == "":
+            warn = False
+        elif len(parts) < 2:
+            warn = True
+        elif len(parts[1]) < self.min_decimal_places:
+            warn = True
         else:
-            self.input.props(remove="color=negative")
+            warn = False
+
+        if warn:
+            self.input.props("color=negative bottom-slots")
+            with self.input.add_slot("hint"):
+                ui.label(f"{self.min_decimal_places} or more decimal places required!")
+        else:
+            self.input.props(remove="color=negative bottom-slots")
 
     async def highlight(self):
         await super().highlight()
