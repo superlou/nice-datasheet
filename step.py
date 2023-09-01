@@ -25,6 +25,8 @@ class Step:
         self.compliance.on("update:model-value", self.update_compliance_color)
         # Can't use update:model-value for changed because clearing does not update model
         self.compliance.on("click", self.emit["changed"])
+        self.compliance.on("keydown", self.on_compliance_keydown)
+
         self.compliance.style("print-color-adjust: exact;")
 
     def build_ui(self):
@@ -37,11 +39,9 @@ class Step:
         self.compliance_prev = self.compliance.value
 
     async def highlight(self):
-        # self.row.classes("shadow")
         self.row.style("background:#f2f7ff")
 
     async def dehighlight(self):
-        # self.row.classes(remove="shadow")
         self.row.style("background:auto")
 
     def update_compliance_color(self, event=None):
@@ -54,6 +54,18 @@ class Step:
         else:
             self.compliance.classes(remove="toggle-pass toggle-fail")
             self.compliance.props("toggle-color=primary")
+
+    async def on_compliance_keydown(self, event):
+        if event.args["keyCode"] == 37:
+            await ui.run_javascript(
+                f"getElement({self.compliance.id}).$el.firstChild.focus()",
+                respond=False
+            )
+        elif event.args["keyCode"] == 39:
+            await ui.run_javascript(
+                f"getElement({self.compliance.id}).$el.lastChild.focus()",
+                respond=False
+            )
 
 
 class SimpleStep(Step):
