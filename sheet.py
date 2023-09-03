@@ -48,8 +48,7 @@ class Sheet:
             step.to_ui()
     
         with ui.row():
-            ui.button("Print", icon="print", on_click=self.trigger_print_dialog)
-            ui.button("Save Data", icon="save", on_click=self.download_json)
+            ui.button("Finish", icon="print", on_click=self.finish)
 
         ui.run()
     
@@ -64,6 +63,11 @@ class Sheet:
             await step.dehighlight()
 
         await self.steps[self.current_step].highlight()        
+
+    async def finish(self):
+        filename = "data/" + self.filename()
+        self.write_json(filename)
+        await self.trigger_print_dialog()
 
     async def trigger_print_dialog(self):
         await ui.run_javascript("window.print();", respond=False)

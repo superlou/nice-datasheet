@@ -1,6 +1,6 @@
 from decimal import Decimal
 from statistics import mean
-from datetime import date
+from datetime import date, datetime
 from sheet import Sheet
 from specs import RangeSpec, DateSpec
 
@@ -12,6 +12,11 @@ def get_date():
 def get_steps_mean(steps):
     values = [float(step.input.value) for step in steps]
     return f"{mean(values):.3f}"
+
+
+def build_filename(pn, sn):
+    now = datetime.now().strftime("%Y-%m-%dT%H%M%S")
+    return f"{pn.input.value}_{sn.input.value}_{now}.json"
 
 
 s = Sheet(title="ATP 1234-1 Datasheet")
@@ -34,5 +39,5 @@ t3 = s.observe("1.4.2", "Repeat step 1.4.1.", **args)
 s.observe(f"1.4.3", "Calculate the mean of the three torque measurements.", unit="lb-in",
           capture=lambda: get_steps_mean([t1, t2, t3]), spec=RangeSpec("[1.2, 1.8]"))
 
-s.filename = lambda: f"{pn.input.value}_{sn.input.value}.json"
+s.filename = lambda: build_filename(pn, sn)
 s.run()
