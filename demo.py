@@ -19,7 +19,7 @@ def build_filename(pn, sn):
     return f"{pn.input.value}_{sn.input.value}_{now}.json"
 
 
-s = Sheet(title="ATP 1234-1 Datasheet")
+s = Sheet("ATP 1234-1 Datasheet")
 s.observe("", "Test operator")
 s.observe("", "Test date", capture=get_date, spec=DateSpec())
 pn = s.observe("", "EUT part number")

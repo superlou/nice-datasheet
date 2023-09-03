@@ -6,10 +6,10 @@ from step import SimpleStep, ObservationStep
 
 
 class Sheet:
-    def __init__(self, **kwargs):
+    def __init__(self, title, **kwargs):
         self.steps = []
         self.current_step = 0
-        self.title = kwargs.get("title", None)
+        self.title = title
 
     def observe(self, ref, text, **kwargs):
         index = len(self.steps)
@@ -32,8 +32,7 @@ class Sheet:
         return step
     
     def run(self):
-        if self.title:
-            ui.label(self.title).classes("text-h1")
+        ui.label(self.title).classes("text-h1")
 
         with ui.row().classes("max-w-screen-lg items-center fit row no-wrap"):
             ui.label("Ref").classes("col-1 text-h6")
@@ -50,7 +49,7 @@ class Sheet:
         with ui.row():
             ui.button("Finish", icon="print", on_click=self.finish)
 
-        ui.run()
+        ui.run(title=self.title, favicon="assets/favicon.ico")
     
     async def advance(self):
         self.current_step += 1
