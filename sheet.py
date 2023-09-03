@@ -9,6 +9,7 @@ class Sheet:
     def __init__(self, title, **kwargs):
         self.steps = []
         self.current_step = 0
+        self.instruments = []
         self.title = title
 
     def observe(self, ref, text, **kwargs):
@@ -31,6 +32,9 @@ class Sheet:
         self.steps.append(step)
         return step
     
+    def instrument(self, instrument):
+        self.instruments.append(instrument)
+
     def run(self):
         ui.label(self.title).classes("text-h1")
 

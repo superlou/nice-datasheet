@@ -3,6 +3,7 @@ from statistics import mean
 from datetime import date, datetime
 from sheet import Sheet
 from specs import RangeSpec, DateSpec
+from bk5492 import BK5492
 
 
 def get_date():
@@ -19,14 +20,28 @@ def build_filename(pn, sn):
     return f"{pn.input.value}_{sn.input.value}_{now}.json"
 
 
+meter = BK5492()
+
 s = Sheet("ATP 1234-1 Datasheet")
+s.instrument(meter)
 s.observe("", "Test operator")
 s.observe("", "Test date", capture=get_date, spec=DateSpec())
 pn = s.observe("", "EUT part number")
 sn = s.observe("", "EUT serial number")
 s.do("1.1", "Set POWER switch to ON")
-s.observe("1.2", "Measure voltage of R1", unit="Ω", spec=RangeSpec("[5.50, 8.30]"))
-s.observe("1.3", "Measure current of PSU", unit="A", spec=RangeSpec("[1, 2]"))
+s.observe("1.2", "Measure resistance of R1", unit="Ω", spec=RangeSpec("[5.50, 8.30]"))
+s.observe(
+    "1.3.1", "Measure voltage across R1",
+    capture=lambda: meter.measure_vdc() * Decimal(1000),
+    unit="mV",
+    spec=RangeSpec("[0, 2]")
+)
+s.observe(
+    "1.3.1", "Measure AC voltage across R1",
+    capture=meter.measure_vac,
+    unit="V",
+    spec=RangeSpec("[1, 2]")
+)
 
 args = {
     "unit": "lb-in",
