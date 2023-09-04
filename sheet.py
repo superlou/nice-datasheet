@@ -40,6 +40,9 @@ class Sheet:
         ui.html('<style>.highlight-focus:focus-within { background: #f2f7ff; }</style>')
         ui.label(self.title).classes("text-h1")
 
+        for instrument in self.instruments:
+            instrument.to_ui()
+
         with ui.row().classes("max-w-screen-lg items-center fit row no-wrap"):
             ui.label("Ref").classes("col-1 text-h6")
             ui.label("Description").classes("col text-h6")

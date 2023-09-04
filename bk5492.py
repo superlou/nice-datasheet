@@ -3,7 +3,8 @@ from enum import Enum
 import time
 import asyncio
 from decimal import Decimal
-from instrument import Instrument, InstrumentException, NoResponse
+from instrument import Instrument, InstrumentException, NoResponse, PortSelector
+from nicegui import ui
 import serial
 
 
@@ -70,15 +71,29 @@ def decode_r0(response):
 
 
 class BK5492(Instrument):
-    def __init__(self, verbose=False):
-        # for port, desc, hwid in list_ports.comports():
-        #     print(f"{port}: {desc} [{hwid}]")
-        
-        self.port = "/dev/ttyUSB0"
+    def __init__(self, name, verbose=False):
+        self.name = name
+        self.device_model = "BK5492"
+        self.port = None
         self.baud = 9600
         self.timeout = 0.1
         self.verbose = verbose
         self.change_delay = 5
+
+    def build_ui_options(self):
+        with ui.row():
+            PortSelector(label="Port").bind_value(self, "port").classes('w-1/4')
+            ui.number("Baud").bind_value(self, "baud")
+
+    def test_connection(self):
+        try:
+            firmware = self.firmware
+            return (f"Successfully connected to BK5492\n"
+                    f"Port: {self.port}\n"
+                    f"Baud: {self.baud}\n"
+                    f"Firmware: {firmware}")
+        except Exception as e:
+            return e
 
     def send_cmd(self, cmd):
         with serial.Serial(self.port, self.baud, timeout=self.timeout) as ser:

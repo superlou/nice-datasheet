@@ -20,7 +20,7 @@ def build_filename(pn, sn):
     return f"{pn.input.value}_{sn.input.value}_{now}.json"
 
 
-meter = BK5492()
+meter = BK5492("DMM1")
 
 s = Sheet("ATP 1234-1 Datasheet")
 s.instrument(meter)
