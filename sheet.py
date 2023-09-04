@@ -36,6 +36,7 @@ class Sheet:
         self.instruments.append(instrument)
 
     def run(self):
+        ui.html('<style>.multi-line-notification { white-space: pre-line; }</style>')
         ui.label(self.title).classes("text-h1")
 
         with ui.row().classes("max-w-screen-lg items-center fit row no-wrap"):

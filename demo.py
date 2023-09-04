@@ -32,14 +32,14 @@ s.do("1.1", "Set POWER switch to ON")
 s.observe("1.2", "Measure resistance of R1", unit="Ω", spec=RangeSpec("[5.50, 8.30]"))
 s.observe(
     "1.3.1", "Measure voltage across R1",
-    capture=lambda: meter.measure_vdc() * Decimal(1000),
+    capture=meter.measure_mvdc,
     unit="mV",
     spec=RangeSpec("[0, 2]")
 )
 s.observe(
     "1.3.1", "Measure AC voltage across R1",
-    capture=meter.measure_vac,
-    unit="V",
+    capture=meter.measure_mvac,
+    unit="mV",
     spec=RangeSpec("[1, 2]")
 )
 
@@ -51,8 +51,10 @@ args = {
 t1 = s.observe("1.4.1", "Measure the torque at the left-handed bolt harness.", **args)
 t2 = s.observe("1.4.2", "Repeat step 1.4.1.", **args)
 t3 = s.observe("1.4.3", "Repeat step 1.4.1.", **args)
-s.observe(f"1.4.4", "Calculate the mean of the three torque measurements.", unit="lb-in",
-          capture=lambda: get_steps_mean([t1, t2, t3]), spec=RangeSpec("[1.2, 1.8]"))
+s.observe(f"1.4.4", "Calculate the mean of the three torque measurements.",
+          capture=lambda: get_steps_mean([t1, t2, t3]),
+          unit="lb-in",
+          spec=RangeSpec("[1.2, 1.8]"))
 
 s.filename = lambda: build_filename(pn, sn)
 s.run()

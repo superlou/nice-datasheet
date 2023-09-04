@@ -1,4 +1,6 @@
+import traceback
 from nicegui import ui
+from asyncio import iscoroutinefunction
 
 
 class Step:
@@ -121,15 +123,38 @@ class ObservationStep(Step):
         self.input.on("focusin", self.emit["got_focus"])
         self.input.on("keypress", self.on_input_keypress)
 
-    def observe(self):
+    async def observe(self):
         if self.observe_fn is None:
             ui.notify(
                 "This step does not have an automatic observation function",
                 type="warning"
             )
+            return
 
-        measurement = self.observe_fn()
-        self.input.set_value(measurement)
+        with self.input.add_slot("prepend"):
+            ui.spinner()
+
+        try:
+            if iscoroutinefunction(self.observe_fn):
+                measurement = await self.observe_fn()
+            else:
+                measurement = self.observe_fn()
+            
+            self.input.set_value(measurement)
+        except Exception as e:
+            print(traceback.format_exc())
+            ui.notify(
+                "Automatic observation failed!\n" + str(e),
+                type="negative",
+                multi_line=True,
+                classes='multi-line-notification',
+            )
+        
+        with self.input.add_slot("prepend"):
+            if self.observe_fn:
+                ui.button(icon="auto_fix_high", on_click=self.observe) \
+                    .props("flat dense").classes("print-hide")
+
         self.input.run_method("focus")
 
     def on_input_change(self):
@@ -163,7 +188,7 @@ class ObservationStep(Step):
     
     async def on_input_keypress(self, event):
         if event.args["keyCode"] == 13 and event.args["ctrlKey"]:
-            self.observe()
+            await self.observe()
 
         if event.args["keyCode"] == 13 and not event.args["ctrlKey"]:
             if self.validate_fn is None:

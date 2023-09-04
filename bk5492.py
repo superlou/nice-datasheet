@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from enum import Enum
 import time
+import asyncio
 from decimal import Decimal
-from instrument import Instrument, InstrumentException
+from instrument import Instrument, InstrumentException, NoResponse
 import serial
 
 
@@ -105,35 +106,46 @@ class BK5492(Instrument):
             #     rx = ser.read_until(b"\r\n")
             #     print("<", rx)
 
+            if rx == b"":
+                raise NoResponse(f"No response from BK5492 at {self.port}")
+
             return rx.strip().decode()
     
-    def change_to_vdc(self):
+    async def change_to_vdc(self):
         response = self.send_cmd("R0")
         response = decode_r0(response)
     
         if response.function1 != Function.Vdc:
             self.send_cmd("S100S")
-            time.sleep(self.change_delay)
+            await asyncio.sleep(self.change_delay)
 
 
-    def change_to_vac(self):
+    async def change_to_vac(self):
         response = self.send_cmd("R0")
         response = decode_r0(response)
     
         if response.function1 != Function.Vac:
             self.send_cmd("S110S")
-            time.sleep(self.change_delay)
+            await asyncio.sleep(self.change_delay)
 
 
-    def measure_vdc(self):
-        self.change_to_vdc()
+    async def measure_vdc(self):
+        await self.change_to_vdc()
         response = self.send_cmd("R1")
         return Decimal(response)
+
+    async def measure_mvdc(self):
+        measurement = await self.measure_vdc()
+        return measurement * Decimal("1000")
     
-    def measure_vac(self):
-        self.change_to_vac()
+    async def measure_vac(self):
+        await self.change_to_vac()
         response = self.send_cmd("R1")
-        return Decimal(response)  
+        return Decimal(response)
+
+    async def measure_mvac(self):
+        measurement = await self.measure_vac()
+        return measurement * Decimal("1000")
 
     @property
     def firmware(self):

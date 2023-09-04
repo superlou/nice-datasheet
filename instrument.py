@@ -11,3 +11,6 @@ class InstrumentException(Exception):
     pass
 
 
+class NoResponse(Exception):
+    pass
+
