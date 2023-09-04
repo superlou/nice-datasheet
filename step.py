@@ -106,8 +106,9 @@ class ObservationStep(Step):
 
             with self.input.add_slot("prepend"):
                 if self.observe_fn:
-                    ui.button(icon="auto_fix_high", on_click=self.observe) \
-                        .props("flat dense").classes("print-hide")
+                    self.observe_button = ui.button(icon="auto_fix_high",
+                                                    on_click=self.observe)
+                    self.observe_button.props("flat dense").classes("print-hide")
 
             with self.input.add_slot('append'):
                 ui.label(self.unit).style("font-size:12pt")
@@ -123,8 +124,7 @@ class ObservationStep(Step):
             )
             return
 
-        with self.input.add_slot("prepend"):
-            ui.spinner()
+        self.observe_button.props("loading")
 
         try:
             if iscoroutinefunction(self.observe_fn):
@@ -142,11 +142,7 @@ class ObservationStep(Step):
                 classes='multi-line-notification',
             )
         
-        with self.input.add_slot("prepend"):
-            if self.observe_fn:
-                ui.button(icon="auto_fix_high", on_click=self.observe) \
-                    .props("flat dense").classes("print-hide")
-
+        self.observe_button.props(remove="loading")
         self.input.run_method("focus")
 
     def on_input_change(self):

@@ -9,13 +9,16 @@ class Instrument:
 
     def to_ui(self):
         with ui.expansion() as expansion:
+            self.config_expansion = expansion
             with expansion.add_slot("header"):
                 with ui.row().classes('w-full items-center'):
                     ui.label(f"{self.name} ({self.device_model})")
-                    self.test_button = ui.button("Test", on_click=self.handle_test_connection)
+                    self.test_button = ui.button(icon="question_mark", on_click=self.handle_test_connection)
             
             expansion.classes('w-full')
             expansion.props("expand-icon-toggle switch-toggle-side")
+            self.test_button.props("round")
+
             self.build_ui_options()
 
     def build_ui_options(self):
@@ -27,11 +30,15 @@ class Instrument:
         if isinstance(result, Exception):
             color = "negative"
             msg = "Connection failed!\n" + repr(result)
+            self.config_expansion.run_method("show")
+            icon = "link_off"
         else:
             color = "positive"
             msg = result
+            self.config_expansion.run_method("hide")
+            icon = "link"
         
-        self.test_button.props(f"color={color}")
+        self.test_button.props(f"color={color} icon={icon}")
         ui.notify(msg, type=color, multi_line=True, classes="multi-line-notification")
 
 
