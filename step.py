@@ -108,7 +108,8 @@ class ObservationStep(Step):
             self.input.props("outlined bg-color=white").classes("col-3")
 
             if self.min_decimal_places is not None:
-                self.input.on("keydown", self.check_decimal_places)
+                self.input.on("keyup", self.warn_decimal_places,
+                              throttle=1, leading_events=False)
 
             with self.input.add_slot("prepend"):
                 if self.observe_fn:
@@ -158,10 +159,7 @@ class ObservationStep(Step):
     def on_input_change(self):
         self.emit["changed"]()
 
-        if self.min_decimal_places is not None:
-            self.check_decimal_places()
-
-    def check_decimal_places(self):
+    def warn_decimal_places(self):
         parts = self.input.value.split(".")
 
         if self.input.value == "":
@@ -179,6 +177,8 @@ class ObservationStep(Step):
                 ui.label(f"{self.min_decimal_places} or more decimal places required!")
         else:
             self.input.props(remove="color=negative bottom-slots")
+        
+        return warn
 
     async def highlight(self):
         await super().highlight()
@@ -189,10 +189,13 @@ class ObservationStep(Step):
             await self.observe()
 
         if event.args["keyCode"] == 13 and not event.args["ctrlKey"]:
+            if self.min_decimal_places is not None and self.warn_decimal_places():
+                # Don't advance if insufficient decimal places
+                return
+
             if self.validate_fn is None:
                 await self.emit["advance"]()
                 return
             
             self.compliance.set_value("Pass" if self.validate_fn(self.input.value) else "Fail")
-            self.update_compliance_color()
             await self.emit["advance"]()
