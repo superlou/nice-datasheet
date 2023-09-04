@@ -37,6 +37,7 @@ class Sheet:
 
     def run(self):
         ui.html('<style>.multi-line-notification { white-space: pre-line; }</style>')
+        ui.html('<style>.highlight-focus:focus-within { background: #f2f7ff; }</style>')
         ui.label(self.title).classes("text-h1")
 
         with ui.row().classes("max-w-screen-lg items-center fit row no-wrap"):
@@ -58,15 +59,10 @@ class Sheet:
     
     async def on_advance(self):
         self.current_step += 1
-        await self.steps[self.current_step].highlight()
+        await self.steps[self.current_step].take_cursor()
 
     async def focus_step(self, index):
         self.current_step = index
-
-        for step in self.steps:
-            await step.dehighlight()
-
-        await self.steps[self.current_step].highlight()
 
     async def finish(self):
         filename = "data/" + self.filename()

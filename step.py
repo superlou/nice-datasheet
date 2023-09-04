@@ -8,7 +8,7 @@ class Step:
         self.ref = ref
         self.text = text
         self.emit = emit
-        self.row_classes = "max-w-screen-lg items-center fit row no-wrap"
+        self.row_classes = "max-w-screen-lg items-center fit row no-wrap highlight-focus"
 
     def to_ui(self):
         with ui.row().classes(self.row_classes) as row:
@@ -41,12 +41,6 @@ class Step:
 
         self.compliance_prev = self.compliance.value
 
-    async def highlight(self):
-        self.row.style("background:#f2f7ff")
-
-    async def dehighlight(self):
-        self.row.style("background:auto")
-
     def update_compliance_color(self, event=None):
         if self.compliance.value == "Pass":
             self.compliance.props("toggle-color=positive")
@@ -77,8 +71,7 @@ class SimpleStep(Step):
         self.label = ui.label(self.text).classes("col")
         self.input = ui.label().classes("col-3")
 
-    async def highlight(self):
-        await super().highlight()
+    async def take_cursor(self):
         await ui.run_javascript(
             f"getElement({self.compliance.id}).$el.firstChild.focus()",
             respond=False
@@ -180,8 +173,7 @@ class ObservationStep(Step):
         
         return warn
 
-    async def highlight(self):
-        await super().highlight()
+    async def take_cursor(self):
         self.input.run_method("focus")
     
     async def on_input_keypress(self, event):
