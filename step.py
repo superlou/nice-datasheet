@@ -15,27 +15,28 @@ class Step:
             self.row = row
             self.build_ui()
             with ui.row().classes("col-1"):
-                self.compliance = ui.toggle(["Pass", "Fail"])
-                self.compliance.props("dense").style("height:56px")
+                self.compliance = ui.toggle(
+                    ["Pass", "Fail"],
+                    on_change=self.on_compliance_change
+                )
 
-        self.compliance.style("background:#f8f8f8")
         self.compliance.on("click", self.emit["got_focus"])
-        self.compliance.props("unelevated")
-
         self.compliance_prev = self.compliance.value
-        self.compliance.on("click", lambda: self.reset_toggle_if_click_same(self.compliance.value))
-        self.compliance.on("update:model-value", self.update_compliance_color)
-        # Can't use update:model-value for changed because clearing does not update model
-        self.compliance.on("click", self.emit["changed"])
+        self.compliance.on("click", self.reset_compliance_if_click_same)
         self.compliance.on("keydown", self.on_compliance_keydown)
 
-        self.compliance.style("print-color-adjust: exact;")
+        self.compliance.props("dense unelevated").style("height:56px")
+        self.compliance.style("background:#f8f8f8; print-color-adjust: exact;")
 
     def build_ui(self):
         raise NotImplementedError
 
-    def reset_toggle_if_click_same(self, new_value):
-        if new_value == self.compliance_prev:
+    def on_compliance_change(self, evt):
+        self.update_compliance_color()
+        self.emit["changed"]()
+
+    def reset_compliance_if_click_same(self, evt):
+        if self.compliance.value == self.compliance_prev:
             self.compliance.value = None
 
         self.compliance_prev = self.compliance.value
@@ -48,13 +49,10 @@ class Step:
 
     def update_compliance_color(self, event=None):
         if self.compliance.value == "Pass":
-            self.compliance.classes(add="toggle-pass", remove="toggle-fail")
             self.compliance.props("toggle-color=positive")
         elif self.compliance.value == "Fail":
-            self.compliance.classes(add="toggle-fail", remove="toggle-pass")
             self.compliance.props("toggle-color=negative")
         else:
-            self.compliance.classes(remove="toggle-pass toggle-fail")
             self.compliance.props("toggle-color=primary")
 
     async def on_compliance_keydown(self, event):

@@ -15,8 +15,8 @@ class Sheet:
     def observe(self, ref, text, **kwargs):
         index = len(self.steps)
         step = ObservationStep(ref, text, {
-            "advance": self.advance,
-            "got_focus": lambda: self.got_focus(index),
+            "advance": self.on_advance,
+            "got_focus": lambda: self.focus_step(index),
             "changed": self.on_changed,
         }, **kwargs)
         self.steps.append(step)
@@ -25,8 +25,8 @@ class Sheet:
     def do(self, ref, text):
         index = len(self.steps)
         step = SimpleStep(ref, text, {
-            "advance": self.advance,
-            "got_focus": lambda: self.got_focus(index),
+            "advance": self.on_advance,
+            "got_focus": lambda: self.focus_step(index),
             "changed": self.on_changed,
         })
         self.steps.append(step)
@@ -56,17 +56,17 @@ class Sheet:
 
         ui.run(title=self.title, favicon="assets/favicon.ico")
     
-    async def advance(self):
+    async def on_advance(self):
         self.current_step += 1
         await self.steps[self.current_step].highlight()
 
-    async def got_focus(self, index):
+    async def focus_step(self, index):
         self.current_step = index
 
         for step in self.steps:
             await step.dehighlight()
 
-        await self.steps[self.current_step].highlight()        
+        await self.steps[self.current_step].highlight()
 
     async def finish(self):
         filename = "data/" + self.filename()
