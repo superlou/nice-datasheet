@@ -12,12 +12,11 @@ class Instrument:
             self.config_expansion = expansion
             with expansion.add_slot("header"):
                 with ui.row().classes('w-full max-w-screen-lg items-center'):
-                    self.test_button = ui.button(icon="help_center", on_click=self.handle_test_connection)
+                    self.test_button = ui.button(icon="help_center")
+                    self.test_button.on("click.stop", self.handle_test_connection)
                     ui.label(f"{self.name} ({self.device_model})")
-                    
-            
+
             expansion.classes('w-full')
-            expansion.props("expand-icon-toggle")
             self.test_button.props("flat")
 
             self.build_ui_options()
