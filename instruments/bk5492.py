@@ -3,7 +3,7 @@ from enum import Enum
 import time
 import asyncio
 from decimal import Decimal
-from instrument import Instrument, InstrumentException, NoResponse, PortSelector
+from .instrument import Instrument, InstrumentException, NoResponse, PortSelector
 from nicegui import ui, app
 import serial
 

@@ -3,7 +3,7 @@ from statistics import mean
 from datetime import date, datetime
 from sheet import Sheet
 from specs import RangeSpec, DateSpec
-from bk5492 import BK5492
+from instruments import BK5492
 
 
 def get_date():
