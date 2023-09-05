@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from datetime import datetime
-from nicegui import ui
+from nicegui import ui, app
 from step import SimpleStep, ObservationStep
 
 
@@ -36,6 +36,9 @@ class Sheet:
         self.instruments.append(instrument)
 
     def run(self):
+        if "instruments" not in app.storage.general:
+            app.storage.general["instruments"] = {}
+
         ui.html('<style>.multi-line-notification { white-space: pre-line; }</style>')
         ui.html('<style>.highlight-focus:focus-within { background: #f2f7ff; }</style>')
         ui.label(self.title).classes("text-h1")

@@ -4,7 +4,7 @@ import time
 import asyncio
 from decimal import Decimal
 from instrument import Instrument, InstrumentException, NoResponse, PortSelector
-from nicegui import ui
+from nicegui import ui, app
 import serial
 
 
@@ -79,11 +79,17 @@ class BK5492(Instrument):
         self.timeout = 0.1
         self.verbose = verbose
         self.change_delay = 5
+        self.prep_storage()
 
     def build_ui_options(self):
         with ui.row():
-            PortSelector(label="Port").bind_value(self, "port").classes('w-1/4')
-            ui.number("Baud").bind_value(self, "baud")
+            PortSelector(label="Port") \
+                .bind_value(self, "port") \
+                .bind_value(app.storage.general["instruments"][self.name], "port") \
+                .classes('w-1/4')
+            ui.number("Baud") \
+                .bind_value(self, "baud") \
+                .bind_value(app.storage.general["instruments"][self.name], "baud") \
 
     def test_connection(self):
         try:

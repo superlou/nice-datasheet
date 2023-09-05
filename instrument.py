@@ -1,5 +1,5 @@
 from serial.tools import list_ports
-from nicegui import ui
+from nicegui import ui, app
 
 
 class Instrument:
@@ -11,13 +11,14 @@ class Instrument:
         with ui.expansion() as expansion:
             self.config_expansion = expansion
             with expansion.add_slot("header"):
-                with ui.row().classes('w-full items-center'):
+                with ui.row().classes('w-full max-w-screen-lg items-center'):
+                    self.test_button = ui.button(icon="help_center", on_click=self.handle_test_connection)
                     ui.label(f"{self.name} ({self.device_model})")
-                    self.test_button = ui.button(icon="question_mark", on_click=self.handle_test_connection)
+                    
             
             expansion.classes('w-full')
-            expansion.props("expand-icon-toggle switch-toggle-side")
-            self.test_button.props("round")
+            expansion.props("expand-icon-toggle")
+            self.test_button.props("flat")
 
             self.build_ui_options()
 
@@ -41,9 +42,15 @@ class Instrument:
         self.test_button.props(f"color={color} icon={icon}")
         ui.notify(msg, type=color, multi_line=True, classes="multi-line-notification")
 
-
     def test_connection(self):
         raise NotImplementedError
+
+    def prep_storage(self):
+        try:
+            record = app.storage.general["instruments"][self.name]
+        except KeyError:
+            record = {}
+            app.storage.general["instruments"][self.name] = record
 
 
 class InstrumentException(Exception):
