@@ -36,9 +36,6 @@ class Sheet:
         self.instruments.append(instrument)
 
     def run(self):
-        if "instruments" not in app.storage.general:
-            app.storage.general["instruments"] = {}
-
         ui.html('<style>.multi-line-notification { white-space: pre-line; }</style>')
         ui.html('<style>.highlight-focus:focus-within { background: #f2f7ff; }</style>')
         ui.label(self.title).classes("text-h1")

@@ -45,6 +45,9 @@ class Instrument:
         raise NotImplementedError
 
     def prep_storage(self):
+        if "instruments" not in app.storage.general:
+            app.storage.general["instruments"] = {}
+
         try:
             record = app.storage.general["instruments"][self.name]
         except KeyError:
