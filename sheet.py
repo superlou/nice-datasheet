@@ -36,8 +36,13 @@ class Sheet:
         self.instruments.append(instrument)
 
     def run(self):
-        ui.html('<style>.multi-line-notification { white-space: pre-line; }</style>')
-        ui.html('<style>.highlight-focus:focus-within { background: #f2f7ff; }</style>')
+        self.dark_mode = ui.dark_mode()
+        ui.html("<style>" + open("style.css").read() + "</style>")
+
+        with ui.header().props("reveal").classes("items-center"):
+            self.add_color_choice().props("flat color=white")
+            ui.button("Finish", icon="print", on_click=self.finish).props("flat color=white")
+
         ui.label(self.title).classes("text-h1")
 
         for instrument in self.instruments:
@@ -90,6 +95,23 @@ class Sheet:
         filename = "data/" + self.filename()
         self.write_json(filename)
         ui.download(filename)
+
+    def add_color_choice(self):
+        def toggle_dark_mode(button):
+            if self.dark_mode.value is True:
+                self.dark_mode.disable()
+                button.props("icon=dark_mode")
+                button.set_text("Dark Mode")
+            else:
+                self.dark_mode.enable()
+                button.props("icon=light_mode")
+                button.set_text("Light Mode")
+
+        return ui.button(
+            "Dark Mode",
+            icon="light_mode" if self.dark_mode.value else "dark_mode",
+            on_click=lambda evt: toggle_dark_mode(evt.sender)
+        )
 
 
 class SheetJSONEncoder(json.JSONEncoder):

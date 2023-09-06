@@ -26,7 +26,7 @@ class Step:
         self.compliance.on("keydown", self.on_compliance_keydown)
 
         self.compliance.props("dense unelevated").style("height:56px")
-        self.compliance.style("background:#f8f8f8; print-color-adjust: exact;")
+        self.compliance.style("print-color-adjust: exact;")
 
     def build_ui(self):
         raise NotImplementedError
@@ -98,7 +98,7 @@ class ObservationStep(Step):
         
         with ui.input(on_change=self.on_input_change) as input_field:
             self.input = input_field
-            self.input.props("outlined bg-color=white").classes("col-3")
+            self.input.props("outlined").classes("col-3")
 
             if self.min_decimal_places is not None:
                 self.input.on("keyup", self.warn_decimal_places,

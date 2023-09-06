@@ -1,0 +1,27 @@
+.multi-line-notification {
+    white-space: pre-line;
+}
+
+body.body--light .highlight-focus:focus-within {
+    background: #f2f7ff;
+}
+
+body.body--dark .highlight-focus:focus-within {
+    background: black;
+}
+
+body.body--light .q-field {
+    background: white;
+}
+
+body.body--dark .q-field {
+    background: #121212;
+}
+
+body.body--light .q-header {
+    background: #6e97d8;
+}
+
+body.body--dark .q-header {
+    background: black;
+}
