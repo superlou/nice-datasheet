@@ -40,7 +40,7 @@ class Sheet:
 
     def run(self):
         self.dark_mode = ui.dark_mode()
-        ui.html("<style>" + open(package_directory / "style.css").read() + "</style>")
+        ui.add_head_html("<style>" + open(package_directory / "style.css").read() + "</style>")
 
         with ui.header().props("reveal").classes("items-center"):
             ui.label(self.title).classes("text-h6").classes("col")
