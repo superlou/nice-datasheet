@@ -2,7 +2,10 @@ import json
 from pathlib import Path
 from datetime import datetime
 from nicegui import ui, app
-from step import SimpleStep, ObservationStep
+from .step import SimpleStep, ObservationStep
+
+
+package_directory = Path(__file__).parent
 
 
 class Sheet:
@@ -37,7 +40,7 @@ class Sheet:
 
     def run(self):
         self.dark_mode = ui.dark_mode()
-        ui.html("<style>" + open("style.css").read() + "</style>")
+        ui.html("<style>" + open(package_directory / "style.css").read() + "</style>")
 
         with ui.header().props("reveal").classes("items-center"):
             ui.label(self.title).classes("text-h6").classes("col")
@@ -62,7 +65,7 @@ class Sheet:
         with ui.row():
             ui.button("Print", icon="print", on_click=self.finish)
 
-        ui.run(title=self.title, favicon="assets/favicon.ico")
+        ui.run(title=self.title, favicon=package_directory / "assets/favicon.ico")
     
     async def on_advance(self):
         self.current_step += 1

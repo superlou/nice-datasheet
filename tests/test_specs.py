@@ -1,5 +1,4 @@
-from decimal import Decimal
-from specs import RangeSpec
+from nicesheet.specs import RangeSpec
 
 
 def test_range_spec():

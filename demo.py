@@ -1,9 +1,9 @@
 from decimal import Decimal
 from statistics import mean
 from datetime import date, datetime
-from sheet import Sheet
-from specs import RangeSpec, DateSpec
-from instruments import BK5492
+from nicesheet import Sheet
+from nicesheet.specs import RangeSpec, DateSpec
+from nicesheet.instruments import BK5492
 
 
 def get_date():
