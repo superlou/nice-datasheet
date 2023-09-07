@@ -40,10 +40,9 @@ class Sheet:
         ui.html("<style>" + open("style.css").read() + "</style>")
 
         with ui.header().props("reveal").classes("items-center"):
+            ui.label(self.title).classes("text-h6").classes("col")
             self.add_color_choice().props("flat color=white")
-            ui.button("Finish", icon="print", on_click=self.finish).props("flat color=white")
-
-        ui.label(self.title).classes("text-h1")
+            ui.button("Print", icon="print", on_click=self.finish).props("flat color=white")
 
         for instrument in self.instruments:
             instrument.to_ui()
@@ -61,7 +60,7 @@ class Sheet:
             step.to_ui()
     
         with ui.row():
-            ui.button("Finish", icon="print", on_click=self.finish)
+            ui.button("Print", icon="print", on_click=self.finish)
 
         ui.run(title=self.title, favicon="assets/favicon.ico")
     
