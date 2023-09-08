@@ -31,9 +31,13 @@ class Step:
     def build_ui(self):
         raise NotImplementedError
 
-    def on_compliance_change(self, evt):
+    async def on_compliance_change(self, evt):
         self.update_compliance_color()
         self.emit["changed"]()
+
+        if self.compliance.value is not None:
+            await self.emit["got_focus"]()
+            await self.emit["advance"]()
 
     def reset_compliance_if_click_same(self, evt):
         if self.compliance.value == self.compliance_prev:
