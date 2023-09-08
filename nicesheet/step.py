@@ -1,6 +1,7 @@
 import traceback
 from nicegui import ui
 from asyncio import iscoroutinefunction
+from .resettable_toggle import ResettableToggle
 
 
 class Step:
@@ -15,15 +16,10 @@ class Step:
             self.row = row
             self.build_ui()
             with ui.row().classes("col-1"):
-                self.compliance = ui.toggle(
+                self.compliance = ResettableToggle(
                     ["Pass", "Fail"],
                     on_change=self.on_compliance_change
-                )
-
-        self.compliance.on("click", self.emit["got_focus"])
-        self.compliance_prev = self.compliance.value
-        self.compliance.on("click", self.reset_compliance_if_click_same)
-        self.compliance.on("keydown", self.on_compliance_keydown)
+                ).on("keydown", self.on_compliance_keydown)
 
         self.compliance.props("dense unelevated").style("height:56px")
         self.compliance.style("print-color-adjust: exact;")
@@ -34,16 +30,10 @@ class Step:
     async def on_compliance_change(self, evt):
         self.update_compliance_color()
         self.emit["changed"]()
+        await self.emit["got_focus"]()
 
         if self.compliance.value is not None:
-            await self.emit["got_focus"]()
             await self.emit["advance"]()
-
-    def reset_compliance_if_click_same(self, evt):
-        if self.compliance.value == self.compliance_prev:
-            self.compliance.value = None
-
-        self.compliance_prev = self.compliance.value
 
     def update_compliance_color(self, event=None):
         if self.compliance.value == "Pass":
