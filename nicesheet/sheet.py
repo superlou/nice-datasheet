@@ -19,6 +19,7 @@ class Sheet:
         index = len(self.steps)
         step = ObservationStep(ref, text, {
             "advance": self.on_advance,
+            "go_back": self.on_go_back,
             "got_focus": lambda: self.focus_step(index),
             "changed": self.on_changed,
         }, **kwargs)
@@ -29,6 +30,7 @@ class Sheet:
         index = len(self.steps)
         step = SimpleStep(ref, text, {
             "advance": self.on_advance,
+            "go_back": self.on_go_back,
             "got_focus": lambda: self.focus_step(index),
             "changed": self.on_changed,
         })
@@ -69,6 +71,10 @@ class Sheet:
     
     async def on_advance(self):
         self.current_step += 1
+        await self.steps[self.current_step].take_cursor()
+
+    async def on_go_back(self):
+        self.current_step -= 1
         await self.steps[self.current_step].take_cursor()
 
     async def focus_step(self, index):

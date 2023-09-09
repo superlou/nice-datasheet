@@ -169,6 +169,11 @@ class ObservationStep(Step):
     async def on_input_keypress(self, event):
         if event.args["keyCode"] == 13 and event.args["ctrlKey"]:
             await self.observe()
+            return
+
+        if event.args["keyCode"] == 13 and event.args["shiftKey"]:
+            await self.emit["go_back"]()
+            return
 
         if event.args["keyCode"] == 13 and not event.args["ctrlKey"]:
             if self.min_decimal_places is not None and self.warn_decimal_places():
