@@ -67,7 +67,9 @@ class PortSelector(ui.select):
     def __init__(self, **kwargs):
         ports = list_ports.comports()
         ports_map = {p.device: f"{p.device}: {p.description}" for p in ports}
-        super().__init__(ports_map, value=ports[0].device, **kwargs)
+        device = ports[0].device if len(ports) > 0 else None
+
+        super().__init__(ports_map, value=device, **kwargs)
         self.on("click", self.update_options)
     
     def update_options(self):
