@@ -51,8 +51,8 @@ args = {
 t1 = s.observe("1.4.1", "Measure the torque at the left-handed bolt harness.", **args)
 t2 = s.observe("1.4.2", "Repeat step 1.4.1.", **args)
 t3 = s.observe("1.4.3", "Repeat step 1.4.1.", **args)
-s.observe(f"1.4.4", "Calculate the mean of the three torque measurements.",
-          capture=lambda: get_steps_mean([t1, t2, t3]),
+s.observe("1.4.4", "Calculate the mean of the three torque measurements.",
+          capture=(get_steps_mean, [t1, t2, t3]),
           unit="lb-in",
           spec=RangeSpec("[1.2, 1.8]"))
 

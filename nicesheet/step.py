@@ -2,6 +2,7 @@ import traceback
 from nicegui import ui
 from asyncio import iscoroutinefunction
 from .resettable_toggle import ResettableToggle
+from .capture import capture_def_parts
 
 
 class Step:
@@ -120,11 +121,13 @@ class ObservationStep(Step):
 
         self.observe_button.props("loading")
 
+        capture_fn, args, kwargs = capture_def_parts(self.observe_fn)
+
         try:
-            if iscoroutinefunction(self.observe_fn):
-                measurement = await self.observe_fn()
+            if iscoroutinefunction(capture_fn):
+                measurement = await capture_fn(*args, **kwargs)
             else:
-                measurement = self.observe_fn()
+                measurement = capture_fn(*args, **kwargs)
             
             self.input.set_value(measurement)
         except Exception as e:
