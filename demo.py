@@ -1,6 +1,6 @@
 from datetime import datetime
 from nicesheet import Sheet
-from nicesheet.specs import RangeSpec, DateSpec
+from nicesheet.specs import AnySpec, RangeSpec, DateSpec
 from nicesheet.capture import get_date, get_steps_mean
 from nicesheet.instruments import BK5492
 
@@ -14,7 +14,7 @@ meter = BK5492("DMM1")
 
 s = Sheet("ATP 1234-1 Datasheet")
 s.instrument(meter)
-s.observe("Test operator")
+s.observe("Test operator", spec=AnySpec())
 s.observe("Test date", capture=get_date, spec=DateSpec())
 pn = s.observe("EUT part number")
 sn = s.observe("EUT serial number")

@@ -7,8 +7,16 @@ class Spec:
     def __init__(self):
         pass
 
-    def complies(self, value: str):
+    def complies(self, text: str):
         raise NotImplementedError
+
+
+class AnySpec(Spec):
+    def complies(self, text: str):
+        return text != ""
+
+    def __str__(self):
+        return "Any"
 
 
 class RangeSpec(Spec):
