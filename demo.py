@@ -1,18 +1,8 @@
-from decimal import Decimal
-from statistics import mean
-from datetime import date, datetime
+from datetime import datetime
 from nicesheet import Sheet
 from nicesheet.specs import RangeSpec, DateSpec
+from nicesheet.capture import get_date, get_steps_mean
 from nicesheet.instruments import BK5492
-
-
-def get_date():
-    return date.today().strftime("%m/%d/%Y")
-
-
-def get_steps_mean(steps):
-    values = [float(step.input.value) for step in steps]
-    return f"{mean(values):.3f}"
 
 
 def build_filename(pn, sn):
