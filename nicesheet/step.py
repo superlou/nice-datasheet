@@ -28,6 +28,9 @@ class Step:
     def build_ui(self):
         raise NotImplementedError
 
+    def reset(self):
+        self.compliance.set_value(None)
+
     async def on_compliance_change(self, evt):
         self.update_compliance_color()
         self.emit["changed"]()
@@ -110,6 +113,10 @@ class ObservationStep(Step):
 
         self.input.on("focusin", self.emit["got_focus"])
         self.input.on("keypress", self.on_input_keypress)
+
+    def reset(self):
+        super().reset()
+        self.input.value = ""
 
     async def observe(self):
         if self.observe_fn is None:

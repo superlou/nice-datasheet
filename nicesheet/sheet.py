@@ -64,6 +64,9 @@ class Sheet:
             ui.button("Print", icon="print", on_click=self.finish) \
                 .props("flat color=white") \
                 .classes("print-hide")
+            ui.button("Reset", icon="delete", on_click=self.reset) \
+                .props("flat color=white") \
+                .classes("print-hide")
 
         for instrument in self.instruments:
             instrument.to_ui()
@@ -137,6 +140,9 @@ class Sheet:
             on_click=lambda evt: toggle_dark_mode(evt.sender)
         )
 
+    def reset(self):
+        for step in self.steps:
+            step.reset()
 
 class SheetJSONEncoder(json.JSONEncoder):
     def default(self, o):
