@@ -177,7 +177,8 @@ class ObservationStep(Step):
         self.input.run_method("focus")
     
     async def on_input_keypress(self, event):
-        if event.args["keyCode"] == 13 and event.args["ctrlKey"]:
+        # On Chrome on Windows ctrl+enter uses keycode 10
+        if event.args["keyCode"] in [13, 10] and event.args["ctrlKey"]:
             await self.observe()
             return
 
