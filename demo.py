@@ -21,7 +21,7 @@ sn = s.observe("EUT serial number")
 s.do("(1.1) Set POWER switch to ON")
 s.observe("(1.2) Measure resistance of R1", unit="Ω", spec=RangeSpec("[5.50, 8.30]"))
 s.observe(
-    "(1.3.1) Measure voltage across R1",
+    "(1.3.1) Measure voltage across R1. **Do not** brush probe contacts across components.",
     capture=meter.measure_mvdc,
     unit="mV",
     spec=RangeSpec("[0, 2]")

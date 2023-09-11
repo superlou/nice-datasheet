@@ -66,7 +66,7 @@ class SimpleStep(Step):
 
     def build_ui(self):
         self.ref_label = ui.label(self.ref).classes("col-1")
-        self.label = ui.label(self.text).classes("col")
+        self.label = ui.markdown(self.text).classes("col")
         self.input = ui.label().classes("col-3")
 
     async def take_cursor(self):
@@ -90,7 +90,7 @@ class ObservationStep(Step):
 
     def build_ui(self):
         self.ref_label = ui.label(self.ref).classes("col-1")
-        self.text = ui.label(self.text).classes("col")
+        self.text = ui.markdown(self.text).classes("col")
         
         self.expect_label = ui.label(str(self.spec)).classes("col-2")
         

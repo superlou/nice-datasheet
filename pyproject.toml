@@ -4,6 +4,7 @@ version = "0.1.0"
 dependencies = [
     "nicegui",
     "pyserial",
+    "pygments>=2.16", # https://github.com/zauberzeug/nicegui/issues/1595
 ]
 
 [build-system]
