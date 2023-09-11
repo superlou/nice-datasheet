@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from datetime import datetime
-from nicegui import ui, app
+from nicegui import ui
 from .step import SimpleStep, ObservationStep
 
 
@@ -54,12 +54,16 @@ class Sheet:
 
     def run(self):
         self.dark_mode = ui.dark_mode()
-        ui.add_head_html("<style>" + open(package_directory / "style.css").read() + "</style>")
+        ui.add_head_html("<style>"
+                         + open(package_directory / "style.css").read()
+                         + "</style>")
 
         with ui.header().props("reveal").classes("items-center"):
             ui.label(self.title).classes("text-h6").classes("col")
-            self.add_color_choice().props("flat color=white")
-            ui.button("Print", icon="print", on_click=self.finish).props("flat color=white")
+            self.color_choice().props("flat color=white").classes("print-hide")
+            ui.button("Print", icon="print", on_click=self.finish) \
+                .props("flat color=white") \
+                .classes("print-hide")
 
         for instrument in self.instruments:
             instrument.to_ui()
@@ -77,7 +81,7 @@ class Sheet:
             step.to_ui()
     
         with ui.row():
-            ui.button("Print", icon="print", on_click=self.finish)
+            ui.button("Print", icon="print", on_click=self.finish).classes("print-hide")
 
         ui.run(title=self.title, favicon=package_directory / "assets/favicon.ico")
     
@@ -116,7 +120,7 @@ class Sheet:
         self.write_json(filename)
         ui.download(filename)
 
-    def add_color_choice(self):
+    def color_choice(self):
         def toggle_dark_mode(button):
             if self.dark_mode.value is True:
                 self.dark_mode.disable()
