@@ -8,6 +8,16 @@ from .step import SimpleStep, ObservationStep
 package_directory = Path(__file__).parent
 
 
+def extract_ref(text):
+    if text[0] == "(":
+        ref, procedure = text[1:].split(")")
+        ref = ref.strip()
+        procedure = procedure.strip()
+        return ref, procedure
+    else:
+        return None, text
+
+
 class Sheet:
     def __init__(self, title, **kwargs):
         self.steps = []
@@ -15,9 +25,10 @@ class Sheet:
         self.instruments = []
         self.title = title
 
-    def observe(self, ref, text, **kwargs):
+    def observe(self, text, **kwargs):
         index = len(self.steps)
-        step = ObservationStep(ref, text, {
+        ref, procedure = extract_ref(text)
+        step = ObservationStep(ref, procedure, {
             "advance": self.on_advance,
             "go_back": self.on_go_back,
             "got_focus": lambda: self.focus_step(index),
@@ -26,9 +37,10 @@ class Sheet:
         self.steps.append(step)
         return step
     
-    def do(self, ref, text):
+    def do(self, text):
         index = len(self.steps)
-        step = SimpleStep(ref, text, {
+        ref, procedure = extract_ref(text)
+        step = SimpleStep(ref, procedure, {
             "advance": self.on_advance,
             "go_back": self.on_go_back,
             "got_focus": lambda: self.focus_step(index),
