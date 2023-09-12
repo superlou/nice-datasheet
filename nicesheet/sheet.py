@@ -3,6 +3,7 @@ from pathlib import Path
 from datetime import datetime
 from nicegui import ui
 from .step import SimpleStep, ObservationStep
+from .system_info import get_system_info
 
 
 package_directory = Path(__file__).parent
@@ -86,6 +87,8 @@ class Sheet:
         with ui.row():
             ui.button("Print", icon="print", on_click=self.finish).classes("print-hide")
 
+        self.system_info = get_system_info()
+
         ui.run(title=self.title, favicon=package_directory / "assets/favicon.ico")
     
     async def on_advance(self):
@@ -151,6 +154,7 @@ class SheetJSONEncoder(json.JSONEncoder):
                 "last-edit": datetime.now().isoformat(),
                 "title": o.title,
                 "steps": o.steps,
+                "system_info": o.system_info,
             }
         elif isinstance(o, SimpleStep):
             return {
