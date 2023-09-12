@@ -6,16 +6,21 @@ from .capture import capture_def_parts
 
 
 class Step:
-    def __init__(self, ref, text, emit):
+    def __init__(self, ref, procedure, emit):
         self.ref = ref
-        self.text = text
+        self.procedure = procedure
         self.emit = emit
         self.row_classes = "max-w-screen-lg items-center fit row no-wrap highlight-focus"
 
     def to_ui(self):
         with ui.row().classes(self.row_classes) as row:
             self.row = row
+            
+            self.ref_el = ui.label(self.ref).classes("col-1")
+            self.procedure_el = ui.markdown(self.procedure).classes("col")
+
             self.build_ui()
+
             with ui.row().classes("col-1"):
                 self.compliance = ResettableToggle(
                     ["Pass", "Fail"],
@@ -58,15 +63,17 @@ class Step:
                 f"getElement({self.compliance.id}).$el.lastChild.focus()",
                 respond=False
             )
+        elif event.args["keyCode"] == 38:
+            await self.emit["go_back"]()
+        elif event.args["keyCode"] == 40:
+            await self.emit["advance"]()            
 
 
 class SimpleStep(Step):
-    def __init__(self, ref, text, emit):
-        super().__init__(ref, text, emit)
+    def __init__(self, ref, procedure, emit):
+        super().__init__(ref, procedure, emit)
 
     def build_ui(self):
-        self.ref_label = ui.label(self.ref).classes("col-1")
-        self.label = ui.markdown(self.text).classes("col")
         self.input = ui.label().classes("col-3")
 
     async def take_cursor(self):
@@ -88,10 +95,7 @@ class ObservationStep(Step):
             self.validate_fn = None
         self.min_decimal_places = kwargs.get("min_decimal_places", None)
 
-    def build_ui(self):
-        self.ref_label = ui.label(self.ref).classes("col-1")
-        self.text = ui.markdown(self.text).classes("col")
-        
+    def build_ui(self):       
         self.expect_label = ui.label(str(self.spec)).classes("col-2")
         
         with ui.input(on_change=self.on_input_change) as input_field:
@@ -112,7 +116,7 @@ class ObservationStep(Step):
                 ui.label(self.unit).style("font-size:12pt")
 
         self.input.on("focusin", self.emit["got_focus"])
-        self.input.on("keypress", self.on_input_keypress)
+        self.input.on("keydown", self.on_input_keydown)
 
     def reset(self):
         super().reset()
@@ -176,17 +180,17 @@ class ObservationStep(Step):
     async def take_cursor(self):
         self.input.run_method("focus")
     
-    async def on_input_keypress(self, event):
+    async def on_input_keydown(self, event):
         # On Chrome on Windows ctrl+enter uses keycode 10
-        if event.args["keyCode"] in [13, 10] and event.args["ctrlKey"]:
-            await self.observe()
-            return
-
-        if event.args["keyCode"] == 13 and event.args["shiftKey"]:
+        if event.args["keyCode"] == 38:
             await self.emit["go_back"]()
-            return
-
-        if event.args["keyCode"] == 13 and not event.args["ctrlKey"]:
+        elif event.args["keyCode"] == 40:
+            await self.emit["advance"]()
+        elif event.args["keyCode"] in [13, 10] and event.args["ctrlKey"]:
+            await self.observe()
+        elif event.args["keyCode"] == 13 and event.args["shiftKey"]:
+            await self.emit["go_back"]()
+        elif event.args["keyCode"] == 13 and not event.args["ctrlKey"]:
             if self.min_decimal_places is not None and self.warn_decimal_places():
                 # Don't advance if insufficient decimal places
                 return

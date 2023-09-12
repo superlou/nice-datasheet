@@ -155,13 +155,13 @@ class SheetJSONEncoder(json.JSONEncoder):
         elif isinstance(o, SimpleStep):
             return {
                 "ref": o.ref,
-                "text": o.text,
+                "procedure": o.procedure,
                 "compliance": o.compliance.value,
             }
         elif isinstance(o, ObservationStep):
             return {
                 "ref": o.ref,
-                "text": o.text,
+                "procedure": o.procedure,
                 "input": o.input.value,
                 "compliance": o.compliance.value,
             }
