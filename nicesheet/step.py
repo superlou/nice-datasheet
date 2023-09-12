@@ -181,12 +181,12 @@ class ObservationStep(Step):
         self.input.run_method("focus")
     
     async def on_input_keydown(self, event):
-        # On Chrome on Windows ctrl+enter uses keycode 10
         if event.args["keyCode"] == 38:
             await self.emit["go_back"]()
         elif event.args["keyCode"] == 40:
             await self.emit["advance"]()
         elif event.args["keyCode"] in [13, 10] and event.args["ctrlKey"]:
+            # On Chrome on Windows ctrl+enter uses keycode 10
             await self.observe()
         elif event.args["keyCode"] == 13 and event.args["shiftKey"]:
             await self.emit["go_back"]()
