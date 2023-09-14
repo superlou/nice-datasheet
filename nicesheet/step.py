@@ -11,10 +11,10 @@ class Step:
         self.procedure = procedure
         self.emit = emit
         self.note = ""
-        self.row_classes = "max-w-screen-lg items-center fit row no-wrap highlight-focus"
+        self.row_classes = "max-w-screen-lg items-center fit row no-wrap"
 
     def to_ui(self):
-        with ui.row().classes(self.row_classes) as row:
+        with ui.row().classes(self.row_classes + " highlight-focus") as row:
             self.row = row
             
             self.ref_el = ui.label(self.ref).classes("col-1")
@@ -22,23 +22,25 @@ class Step:
 
             self.build_ui()
 
-            with ui.row().classes("col-1"):
-                self.compliance = ResettableToggle(
-                    ["Pass", "Fail"],
-                    on_change=self.on_compliance_change
-                ).on("keydown", self.on_compliance_keydown)
+            self.compliance = ResettableToggle(
+                ["Pass", "Fail"],
+                on_change=self.on_compliance_change
+            ).on("keydown", self.on_compliance_keydown).classes("col-1")
+
+
+        with ui.row().classes(self.row_classes + " hidden") as note_row:
+            self.note_row = note_row
+            ui.label().classes("col-1")
+
+            with ui.input(label="Note").props("autogrow outlined").classes("col") as input:
+                with input.add_slot("append"):
+                    ui.button(icon="delete", on_click=self.delete_note).props("flat").classes("print-hide")
+
+            ui.label().classes("col-1")
 
         self.compliance.props("dense unelevated")
         self.compliance.style("print-color-adjust: exact;")
         self.row.on("click", lambda: self.emit["clicked"](self))
-
-        with ui.row().classes("max-w-screen-lg fit row no-wrap hidden") as note_row:
-            self.note_row = note_row
-            ui.label().classes("col-1")
-
-            with ui.input(label="Note").props("autogrow outlined").classes("col-10") as input:
-                with input.add_slot("append"):
-                    ui.button(icon="delete", on_click=self.delete_note).props("flat").classes("print-hide")
 
     def build_ui(self):
         raise NotImplementedError
