@@ -10,6 +10,7 @@ class Step:
         self.ref = ref
         self.procedure = procedure
         self.emit = emit
+        self.note = ""
         self.row_classes = "max-w-screen-lg items-center fit row no-wrap highlight-focus"
 
     def to_ui(self):
@@ -29,6 +30,15 @@ class Step:
 
         self.compliance.props("dense unelevated")
         self.compliance.style("print-color-adjust: exact;")
+        self.row.on("click", lambda: self.emit["clicked"](self))
+
+        with ui.row().classes("max-w-screen-lg fit row no-wrap hidden") as note_row:
+            self.note_row = note_row
+            ui.label().classes("col-1")
+
+            with ui.input(label="Note").props("autogrow outlined").classes("col-10") as input:
+                with input.add_slot("append"):
+                    ui.button(icon="delete", on_click=self.delete_note).props("flat").classes("print-hide")
 
     def build_ui(self):
         raise NotImplementedError
@@ -68,6 +78,13 @@ class Step:
         elif event.args["keyCode"] == 40:
             await self.emit["advance"]()            
 
+    def add_note(self):
+        self.note_row.classes(remove="hidden")
+
+    def delete_note(self):
+        self.note = ""
+        self.note_row.classes("hidden")
+
 
 class SimpleStep(Step):
     def __init__(self, ref, procedure, emit):
@@ -96,7 +113,7 @@ class ObservationStep(Step):
         self.min_decimal_places = kwargs.get("min_decimal_places", None)
 
     def build_ui(self):       
-        self.expect_label = ui.label(str(self.spec)).classes("col-2")
+        self.spec_label = ui.label(str(self.spec)).classes("col-2")
         
         with ui.input(on_change=self.on_input_change) as input_field:
             self.input = input_field

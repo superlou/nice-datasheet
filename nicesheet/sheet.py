@@ -34,6 +34,7 @@ class Sheet:
             "go_back": self.on_go_back,
             "got_focus": lambda: self.focus_step(index),
             "changed": self.on_changed,
+            "clicked": self.on_click_step,
         }, **kwargs)
         self.steps.append(step)
         return step
@@ -46,6 +47,7 @@ class Sheet:
             "go_back": self.on_go_back,
             "got_focus": lambda: self.focus_step(index),
             "changed": self.on_changed,
+            "clicked": self.on_click_step,
         })
         self.steps.append(step)
         return step
@@ -55,18 +57,20 @@ class Sheet:
 
     def run(self):
         self.dark_mode = ui.dark_mode()
+        self.add_note_requested = False
         ui.add_head_html("<style>"
                          + open(package_directory / "style.css").read()
                          + "</style>")
 
         with ui.header().props("reveal").classes("items-center"):
             ui.label(self.title).classes("text-h6").classes("col")
-            self.color_choice().props("flat color=white").classes("print-hide")
+            self.add_note().props("flat color=white dense").classes("print-hide")
+            self.color_choice().props("flat color=white dense").classes("print-hide")
             ui.button("Print", icon="print", on_click=self.finish) \
-                .props("flat color=white") \
+                .props("flat color=white dense") \
                 .classes("print-hide")
             ui.button("Reset", icon="delete", on_click=self.reset) \
-                .props("flat color=white") \
+                .props("flat color=white dense") \
                 .classes("print-hide")
 
         for instrument in self.instruments:
@@ -126,6 +130,24 @@ class Sheet:
         self.write_json(filename)
         ui.download(filename)
 
+    def add_note(self):
+        self.add_note_button = ui.button("Add note", icon="edit_note", on_click=self.on_click_add_note)
+        return self.add_note_button
+
+    def on_click_add_note(self):
+        if self.add_note_requested is False:
+            self.add_note_requested = True
+            self.add_note_button.set_text("Click step")
+        else:
+            self.add_note_requested = False
+            self.add_note_button.set_text("Add note")
+
+    def on_click_step(self, step):
+        if self.add_note_requested:
+            step.add_note()
+            self.add_note_requested = False
+            self.add_note_button.set_text("Add note")
+
     def color_choice(self):
         def toggle_dark_mode(button):
             if self.dark_mode.value is True:
@@ -161,6 +183,7 @@ class SheetJSONEncoder(json.JSONEncoder):
                 "ref": o.ref,
                 "procedure": o.procedure,
                 "compliance": o.compliance.value,
+                "note": o.note,
             }
         elif isinstance(o, ObservationStep):
             return {
@@ -168,4 +191,5 @@ class SheetJSONEncoder(json.JSONEncoder):
                 "procedure": o.procedure,
                 "input": o.input.value,
                 "compliance": o.compliance.value,
+                "note": o.note,
             }
