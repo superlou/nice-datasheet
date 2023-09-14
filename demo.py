@@ -12,7 +12,7 @@ def build_filename(pn, sn):
 
 meter = BK5492("DMM1")
 
-s = Sheet("ATP 1234-1 Datasheet")
+s = Sheet("ATP 1234-1 Datasheet", "v1")
 s.instrument(meter)
 s.observe("Test operator", spec=AnySpec())
 s.observe("Test date", capture=get_date, spec=DateSpec())

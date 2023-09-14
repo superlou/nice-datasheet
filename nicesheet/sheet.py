@@ -20,11 +20,12 @@ def extract_ref(text):
 
 
 class Sheet:
-    def __init__(self, title, **kwargs):
+    def __init__(self, title, version, **kwargs):
         self.steps = []
         self.current_step = 0
         self.instruments = []
         self.title = title
+        self.version = version
 
     def observe(self, text, **kwargs):
         index = len(self.steps)
@@ -63,7 +64,9 @@ class Sheet:
                          + "</style>")
 
         with ui.header().props("reveal").classes("items-center"):
-            ui.label(self.title).classes("text-h6").classes("col")
+            with ui.row().classes("col items-baseline"):
+                ui.label(self.title).classes("text-h6")
+                ui.label(self.version)
             self.add_note().props("flat color=white dense").classes("print-hide")
             self.color_choice().props("flat color=white dense").classes("print-hide")
             ui.button("Print", icon="print", on_click=self.finish) \
