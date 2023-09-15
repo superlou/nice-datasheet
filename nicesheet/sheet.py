@@ -57,6 +57,7 @@ class Sheet:
         self.instruments.append(instrument)
 
     def run(self):
+        self.system_info = get_system_info()
         self.dark_mode = ui.dark_mode()
         self.add_note_requested = False
         ui.add_head_html("<style>"
@@ -66,7 +67,8 @@ class Sheet:
         with ui.header().props("reveal").classes("items-center"):
             with ui.row().classes("col items-baseline"):
                 ui.label(self.title).classes("text-h6")
-                ui.label(self.version)
+                with ui.label(self.version):
+                    ui.tooltip(self.version_info()).classes("multi-line-notification")
             self.add_note().props("flat color=white dense").classes("print-hide")
             self.color_choice().props("flat color=white dense").classes("print-hide")
             ui.button("Print", icon="print", on_click=self.finish) \
@@ -93,8 +95,6 @@ class Sheet:
     
         with ui.row():
             ui.button("Print", icon="print", on_click=self.finish).classes("print-hide")
-
-        self.system_info = get_system_info()
 
         ui.run(title=self.title, favicon=package_directory / "assets/favicon.ico")
     
@@ -134,7 +134,9 @@ class Sheet:
         ui.download(filename)
 
     def add_note(self):
-        self.add_note_button = ui.button("Add note", icon="edit_note", on_click=self.on_click_add_note)
+        with ui.button("Add note", icon="edit_note", on_click=self.on_click_add_note) as button:
+            self.add_note_button = button
+            ui.tooltip("Click this button, then click a step to add a note.")
         return self.add_note_button
 
     def on_click_add_note(self):
@@ -171,6 +173,14 @@ class Sheet:
     def reset(self):
         for step in self.steps:
             step.reset()
+
+    def version_info(self):
+        nicesheets_ver = self.system_info["dependencies"]["nicesheets"]
+        python_ver = self.system_info["python"]["version"]
+
+        return (f"Datasheet version: {self.version}\n"
+                f"Nicesheets version: {nicesheets_ver}\n"
+                f"Python version: {python_ver}")
 
 class SheetJSONEncoder(json.JSONEncoder):
     def default(self, o):
