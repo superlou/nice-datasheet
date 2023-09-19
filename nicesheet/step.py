@@ -1,7 +1,6 @@
 import traceback
 from nicegui import ui
 from asyncio import iscoroutinefunction
-from .resettable_toggle import ResettableToggle
 from .capture import capture_def_parts
 
 
@@ -22,11 +21,10 @@ class Step:
 
             self.build_ui()
 
-            self.compliance = ResettableToggle(
+            self.compliance = ui.toggle(
                 ["Pass", "Fail"],
                 on_change=self.on_compliance_change
-            ).on("keydown", self.on_compliance_keydown).classes("col-1")
-
+            ).on("keydown", self.on_compliance_keydown).props("clearable").classes("col-1")
 
         with ui.row().classes(self.row_classes + " hidden") as note_row:
             self.note_row = note_row
