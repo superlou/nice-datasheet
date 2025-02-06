@@ -112,10 +112,10 @@ class Sheet:
     async def finish(self):
         filename = "data/" + self.filename()
         self.write_json(filename)
-        await self.trigger_print_dialog()
+        self.trigger_print_dialog()
 
-    async def trigger_print_dialog(self):
-        await ui.run_javascript("window.print();", respond=False)
+    def trigger_print_dialog(self):
+        ui.run_javascript("window.print();")
     
     def on_changed(self):
         self.write_json()
